@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+  <title>北田内科クリニック 予約システム</title>
+<style>
+html,body{
+  margin:0;
+  padding:0;
+  width:100%;
+  overflow-x:hidden;
+  overflow-y:auto;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  background:#f4f6f9;
+  font-size:18px;
+  -webkit-text-size-adjust:100%;
+  touch-action: pan-y;
+}
+img{max-width:100%;height:auto;display:block;}
+.hero{background-size:cover;background-position:center;height:230px;display:flex;flex-direction:column;justify-content:center;align-items:center;color:white;text-align:center;padding:0 10px;}
+.hero h1{margin:0;font-size:28px;font-weight:800;}
+.hero h2{margin-top:8px;font-size:20px;font-weight:700;}
+.container{max-width:420px;width:100%;box-sizing:border-box;margin:-35px auto 40px auto;background:white;border-radius:14px;padding:25px 20px 35px 20px;box-shadow:0 8px 25px rgba(0,0,0,0.08);}
+label{display:block;margin-top:20px;font-size:18px;font-weight:700;}
+input,select{width:100%;padding:16px;margin-top:8px;font-size:18px;font-weight:600;border-radius:10px;border:1.5px solid #bbb;box-sizing:border-box;background:white;}
+input.invalid-date{background:#ffe5e5;}
+.time-buttons{display:flex;gap:10px;margin-top:10px;}
+.time-buttons button{flex:1;padding:16px;min-height:50px;font-size:18px;font-weight:700;border-radius:10px;border:none;background:#e9ecef;cursor:pointer;}
+.active{background:#007bff!important;color:white;}
+.disabled{opacity:0.4;pointer-events:none;}
+#submitBtn{width:100%;padding:18px;margin-top:30px;font-size:19px;font-weight:800;border-radius:12px;border:none;background:#0056d6;color:white;cursor:pointer;min-height:56px;}
+.hidden{display:none;}
+.complete{text-align:center;padding:40px 10px;word-break:break-word;overflow-wrap:break-word;}
+#agreeCheck{width:26px;height:26px;}
+@media(max-width:600px){.container{width:100%;max-width:100%;margin:0;border-radius:0;padding:22px 16px 30px 16px;}}
+</style>
+</head>
+<body>
+<div class="hero">
+<h1>Medical Smart Order</h1>
+<h2>北田内科クリニック</h2>
+</div>
+<div class="container">
+<div id="loginArea">
+<label>パスワード</label>
+<input type="password" id="password">
+<button onclick="login()" style="margin-top:15px;padding:16px;width:100%;font-size:18px;font-weight:700;border-radius:10px;border:none;background:#007bff;color:white;min-height:50px;">ログイン</button>
+</div>
+<div id="formArea" class="hidden">
+<form id="reservationForm">
+<label>姓</label><input type="text" id="lastName" required>
+<label>名</label><input type="text" id="firstName" required>
+<label>セイ</label><input type="text" id="lastKana" required>
+<label>メイ</label><input type="text" id="firstKana" required>
+<label>生年月日</label><input type="date" id="birthDate" required>
+<label>住所</label><input type="text" id="address" required>
+<label>電話番号</label><input type="tel" id="phone" required>
+<label>メールアドレス</label><input type="email" id="email" required>
+<label>初回購入</label>
+<select id="firstPurchase" required>
+<option value="">選択してください</option>
+<option value="true">はい</option>
+<option value="false">いいえ</option>
+</select>
+<label>セット数</label><select id="setCount"></select>
+<label>受取日</label><input type="date" id="reservationDate" required>
+<label>時間帯</label>
+<div class="time-buttons">
+<button type="button" id="morningBtn">午前</button>
+<button type="button" id="afternoonBtn">午後</button>
+</div>
+<div id="importantNotice" style="margin-top:22px;font-size:17px;line-height:1.7;">
+◆ マンジャロ処方前の重要確認：<br>
+専門医の管理のもと、安全に使用してください。
+</div>
+<div style="margin-top:15px;display:flex;align-items:center;gap:10px;">
+<input type="checkbox" id="agreeCheck">
+<label for="agreeCheck" style="margin:0;font-size:18px;font-weight:700;">上記内容を確認・同意しました</label>
+</div>
+<button type="submit" id="submitBtn">予約する</button>
+</form>
+</div>
+<div id="completeArea" class="complete hidden"></div>
+</div>
+<script>
+const GAS_URL="https://script.google.com/macros/s/AKfycbzMH_bQoxLM4-mUqOFSZ1375p9DvnLQH7XcokQ_soUzm0Nvzra8xscis2IxM4ZoTf_I/exec";
+let holidays=[],minDate="",selectedTime="";
+function post(action,data){return fetch(GAS_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:action,...data})}).then(r=>r.json());}
+function login(){
+  post("authenticate",{password:password.value})
+  .then(res=>{
+    console.log("API返却値:", res);
+    alert("返却値: " + JSON.stringify(res));
+    
+    if(res===true){
+      loginArea.classList.add("hidden");
+      formArea.classList.remove("hidden");
+      initData();
+    }else{
+      alert("パスワードが違います");
+    }
+  });
+}
+function initData(){post("getInitialCalendarData",{}).then(data=>{holidays=data.holidays;minDate=data.minDate;reservationDate.setAttribute("min",minDate);});
+post("getSetOptions",{}).then(list=>{setCount.innerHTML="";list.forEach(function(opt){const o=document.createElement("option");o.value=opt.value;o.textContent=opt.label;setCount.appendChild(o);});});}
+morningBtn.onclick=function(){selectedTime="午前";morningBtn.classList.add("active");afternoonBtn.classList.remove("active");};
+afternoonBtn.onclick=function(){selectedTime="午後";afternoonBtn.classList.add("active");morningBtn.classList.remove("active");};
+reservationForm.addEventListener("submit",function(e){e.preventDefault();if(!selectedTime){alert("時間帯を選択してください");return;}if(!agreeCheck.checked){alert("上記内容を確認・同意してください");return;}
+const data={lastName:lastName.value,firstName:firstName.value,lastKana:lastKana.value,firstKana:firstKana.value,birthDate:birthDate.value,address:address.value,phone:phone.value,email:email.value,firstPurchase:firstPurchase.value==="true",setCount:setCount.value,reservationDate:reservationDate.value,time:selectedTime};
+post("submitReservation",{data:data}).then(res=>{if(res.status==="success"){formArea.classList.add("hidden");completeArea.classList.remove("hidden");completeArea.innerHTML="<h3>予約が完了しました</h3><p>予約番号："+res.reservationNumber+"</p><p>予約内容確認メールをご指定のメールアドレスに送信致しました。当日は確認メールに記載された〖予約番号〗を窓口でお伝えください</p><p>北田内科クリニック</p><button onclick=\"window.location.href='https://www.kitadaclinic.com/'\" style=\"margin-top:20px;padding:16px;width:100%;font-size:18px;font-weight:700;border-radius:10px;border:none;background:#007bff;color:white;min-height:50px;\">北田内科クリニック公式ホームページへ</button>";}else{alert(res.message);}});});
+</script>
+</body>
+</html>
