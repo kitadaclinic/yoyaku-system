@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>北田内科クリニック ログインテスト</title>
+<style>
+body{
+  font-family: sans-serif;
+  padding:40px;
+  text-align:center;
+}
+input{
+  padding:10px;
+  font-size:16px;
+}
+button{
+  padding:10px 20px;
+  font-size:16px;
+  margin-top:10px;
+}
+</style>
+</head>
+<body>
+
+<h2>ログインテスト</h2>
+
+<input type="password" id="password" placeholder="パスワード">
+<br>
+<button onclick="login()">ログイン</button>
+
+<script>
+const GAS_URL="https://script.google.com/macros/s/AKfycbzNSu3aIxr5V6re4CDc1rzcw2BWhBHocN4GK1b1u8gZTVvHGE3mRIfGdQMH0BW1TNBm/exec";
+
+function login(){
+  alert("login関数開始");
+
+  fetch(GAS_URL,{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+      action:"authenticate",
+      password:document.getElementById("password").value
+    })
+  })
+  .then(r=>r.json())
+  .then(res=>{
+    alert("API返却値: " + JSON.stringify(res));
+  })
+  .catch(err=>{
+    alert("通信エラー: " + err);
+  });
+}
+</script>
+
+</body>
+</html>
