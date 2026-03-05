@@ -86,7 +86,7 @@ input.invalid-date{background:#ffe5e5;}
 <div id="completeArea" class="complete hidden"></div>
 </div>
 <script>
-const GAS_URL="https://script.google.com/macros/s/AKfycbzMH_bQoxLM4-mUqOFSZ1375p9DvnLQH7XcokQ_soUzm0Nvzra8xscis2IxM4ZoTf_I/exec";
+const GAS_URL="https://script.google.com/macros/s/AKfycbyZAVbcHORZuuavQsm9rkoARndvwtXX-hUQqUK5vIUJNB3oKg7vv9xE13bEw4RCKo05/exec";
 let holidays=[],minDate="",selectedTime="";
 function post(action,data){return fetch(GAS_URL,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify({action:action,...data})}).then(r=>r.json());}
 function login(){
