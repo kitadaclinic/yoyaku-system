@@ -51,6 +51,9 @@ input,select{width:100%;padding:16px;margin-top:8px;font-size:18px;font-weight:6
 </div>
 <div id="formArea" class="hidden">
 <form id="reservationForm">
+
+<label>紹介コード</label><input type="text" id="referralCode" required>
+
 <label>姓</label><input type="text" id="lastName" required>
 <label>名</label><input type="text" id="firstName" required>
 <label>セイ</label><input type="text" id="lastKana" required>
@@ -195,6 +198,7 @@ return;
 }
 
 const data={
+referralCode:referralCode.value,
 lastName:lastName.value,
 firstName:firstName.value,
 lastKana:lastKana.value,
