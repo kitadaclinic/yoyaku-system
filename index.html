@@ -26,7 +26,7 @@ img{max-width:100%;height:auto;display:block;}
 .container{max-width:420px;width:100%;box-sizing:border-box;margin:-35px auto 40px auto;background:white;border-radius:14px;padding:25px 20px 35px 20px;box-shadow:0 8px 25px rgba(0,0,0,0.08);}
 label{display:block;margin-top:20px;font-size:18px;font-weight:700;}
 input,select{width:100%;padding:16px;margin-top:8px;font-size:18px;font-weight:600;border-radius:10px;border:1.5px solid #bbb;box-sizing:border-box;background:white;}
-input.invalid-date{background:#ffe5e5;}
+.invalid-date{background:#ffe5e5;color:red;}
 .time-buttons{display:flex;gap:10px;margin-top:10px;}
 .time-buttons button{flex:1;padding:16px;min-height:50px;font-size:18px;font-weight:700;border-radius:10px;border:none;background:#e9ecef;cursor:pointer;}
 .active{background:#007bff!important;color:white;}
@@ -85,32 +85,137 @@ input.invalid-date{background:#ffe5e5;}
 </div>
 <div id="completeArea" class="complete hidden"></div>
 </div>
+
 <script>
+
 const GAS_URL="https://script.google.com/macros/s/AKfycbyZAVbcHORZuuavQsm9rkoARndvwtXX-hUQqUK5vIUJNB3oKg7vv9xE13bEw4RCKo05/exec";
-let holidays=[],minDate="",selectedTime="";
-function post(action,data){return fetch(GAS_URL,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify({action:action,...data})}).then(r=>r.json());}
-function login(){
-  post("authenticate",{password:password.value})
-  .then(res=>{
-    console.log("API返却値:", res);
-    alert("返却値: " + JSON.stringify(res));
-    
-    if(res===true){
-      loginArea.classList.add("hidden");
-      formArea.classList.remove("hidden");
-      initData();
-    }else{
-      alert("パスワードが違います");
-    }
-  });
+
+let holidays=[];
+let minDate="";
+let selectedTime="";
+
+function post(action,data){
+return fetch(GAS_URL,{
+method:"POST",
+headers:{"Content-Type":"text/plain"},
+body:JSON.stringify({action:action,...data})
+}).then(r=>r.json());
 }
-function initData(){post("getInitialCalendarData",{}).then(data=>{holidays=data.holidays;minDate=data.minDate;reservationDate.setAttribute("min",minDate);});
-post("getSetOptions",{}).then(list=>{setCount.innerHTML="";list.forEach(function(opt){const o=document.createElement("option");o.value=opt.value;o.textContent=opt.label;setCount.appendChild(o);});});}
-morningBtn.onclick=function(){selectedTime="午前";morningBtn.classList.add("active");afternoonBtn.classList.remove("active");};
-afternoonBtn.onclick=function(){selectedTime="午後";afternoonBtn.classList.add("active");morningBtn.classList.remove("active");};
-reservationForm.addEventListener("submit",function(e){e.preventDefault();if(!selectedTime){alert("時間帯を選択してください");return;}if(!agreeCheck.checked){alert("上記内容を確認・同意してください");return;}
-const data={lastName:lastName.value,firstName:firstName.value,lastKana:lastKana.value,firstKana:firstKana.value,birthDate:birthDate.value,address:address.value,phone:phone.value,email:email.value,firstPurchase:firstPurchase.value==="true",setCount:setCount.value,reservationDate:reservationDate.value,time:selectedTime};
-post("submitReservation",{data:data}).then(res=>{if(res.status==="success"){formArea.classList.add("hidden");completeArea.classList.remove("hidden");completeArea.innerHTML="<h3>予約が完了しました</h3><p>予約番号："+res.reservationNumber+"</p><p>予約内容確認メールをご指定のメールアドレスに送信致しました。当日は確認メールに記載された〖予約番号〗を窓口でお伝えください</p><p>北田内科クリニック</p><button onclick=\"window.location.href='https://www.kitadaclinic.com/'\" style=\"margin-top:20px;padding:16px;width:100%;font-size:18px;font-weight:700;border-radius:10px;border:none;background:#007bff;color:white;min-height:50px;\">北田内科クリニック公式ホームページへ</button>";}else{alert(res.message);}});});
+
+function login(){
+post("authenticate",{password:password.value})
+.then(res=>{
+if(res===true){
+loginArea.classList.add("hidden");
+formArea.classList.remove("hidden");
+initData();
+}else{
+alert("パスワードが違います");
+}
+});
+}
+
+function initData(){
+post("getInitialCalendarData",{}).then(data=>{
+holidays=data.holidays;
+minDate=data.minDate;
+reservationDate.setAttribute("min",minDate);
+});
+post("getSetOptions",{}).then(list=>{
+setCount.innerHTML="";
+list.forEach(function(opt){
+const o=document.createElement("option");
+o.value=opt.value;
+o.textContent=opt.label;
+setCount.appendChild(o);
+});
+});
+}
+
+reservationDate.addEventListener("change",function(){
+
+const d=new Date(this.value);
+const day=d.getDay();
+
+if(day===0){
+alert("日曜日は選択できません");
+this.value="";
+return;
+}
+
+if(holidays.includes(this.value)){
+alert("祝日は選択できません");
+this.classList.add("invalid-date");
+this.value="";
+return;
+}else{
+this.classList.remove("invalid-date");
+}
+
+if(day===3 || day===6){
+afternoonBtn.classList.add("disabled");
+}else{
+afternoonBtn.classList.remove("disabled");
+}
+
+});
+
+morningBtn.onclick=function(){
+selectedTime="午前";
+morningBtn.classList.add("active");
+afternoonBtn.classList.remove("active");
+};
+
+afternoonBtn.onclick=function(){
+if(afternoonBtn.classList.contains("disabled")){
+alert("この日は午後を選択できません");
+return;
+}
+selectedTime="午後";
+afternoonBtn.classList.add("active");
+morningBtn.classList.remove("active");
+};
+
+reservationForm.addEventListener("submit",function(e){
+e.preventDefault();
+
+if(!selectedTime){
+alert("時間帯を選択してください");
+return;
+}
+
+if(!agreeCheck.checked){
+alert("上記内容を確認・同意してください");
+return;
+}
+
+const data={
+lastName:lastName.value,
+firstName:firstName.value,
+lastKana:lastKana.value,
+firstKana:firstKana.value,
+birthDate:birthDate.value,
+address:address.value,
+phone:phone.value,
+email:email.value,
+firstPurchase:firstPurchase.value==="true",
+setCount:setCount.value,
+reservationDate:reservationDate.value,
+time:selectedTime
+};
+
+post("submitReservation",{data:data}).then(res=>{
+if(res.status==="success"){
+formArea.classList.add("hidden");
+completeArea.classList.remove("hidden");
+completeArea.innerHTML="<h3>予約が完了しました</h3><p>予約番号："+res.reservationNumber+"</p><p>予約内容確認メールをご指定のメールアドレスに送信致しました。当日は確認メールに記載された〖予約番号〗を窓口でお伝えください</p><p>北田内科クリニック</p><button onclick=\"window.location.href='https://www.kitadaclinic.com/'\" style=\"margin-top:20px;padding:16px;width:100%;font-size:18px;font-weight:700;border-radius:10px;border:none;background:#007bff;color:white;min-height:50px;\">北田内科クリニック公式ホームページへ</button>";
+}else{
+alert(res.message);
+}
+});
+
+});
+
 </script>
 </body>
 </html>
