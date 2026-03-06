@@ -35,6 +35,8 @@ input,select{width:100%;padding:16px;margin-top:8px;font-size:18px;font-weight:6
 .hidden{display:none;}
 .complete{text-align:center;padding:40px 10px;word-break:break-word;overflow-wrap:break-word;}
 #agreeCheck{width:26px;height:26px;}
+button:disabled{background:#bfc4c9;cursor:not-allowed;}
+.locked{background:#6c757d!important;}
 @media(max-width:600px){.container{width:100%;max-width:100%;margin:0;border-radius:0;padding:22px 16px 30px 16px;}}
 </style>
 </head>
@@ -47,7 +49,7 @@ input,select{width:100%;padding:16px;margin-top:8px;font-size:18px;font-weight:6
 <div id="loginArea">
 <label>パスワード</label>
 <input type="password" id="password">
-<button onclick="login()" style="margin-top:15px;padding:16px;width:100%;font-size:18px;font-weight:700;border-radius:10px;border:none;background:#007bff;color:white;min-height:50px;">ログイン</button>
+<button id="loginBtn" onclick="login()" style="margin-top:15px;padding:16px;width:100%;font-size:18px;font-weight:700;border-radius:10px;border:none;background:#007bff;color:white;min-height:50px;" disabled>ログイン</button>
 </div>
 <div id="formArea" class="hidden">
 <form id="reservationForm">
@@ -68,13 +70,14 @@ input,select{width:100%;padding:16px;margin-top:8px;font-size:18px;font-weight:6
 <option value="true">はい</option>
 <option value="false">いいえ</option>
 </select>
-<label>セット数</label><select id="setCount"></select>
-<label>受取日</label><input type="date" id="reservationDate" required>
+<label>セット数（2.5mg）※初診料含みます</label><select id="setCount"></select>
+<label>受取日（本日から4営業日以降）</label><input type="date" id="reservationDate" required>
 <label>時間帯</label>
 <div class="time-buttons">
 <button type="button" id="morningBtn">午前</button>
 <button type="button" id="afternoonBtn">午後</button>
 </div>
+
 <div id="importantNotice" style="margin-top:22px;font-size:17px;line-height:1.7;">
 ◆ マンジャロ処方前の重要確認<br>
 〖 慎重な判断が必要な方 〗<br>
@@ -84,11 +87,13 @@ input,select{width:100%;padding:16px;margin-top:8px;font-size:18px;font-weight:6
 • 医学的判断により処方不可となる場合があります。<br> 
 • 自己判断での使用・増量は重大な健康被害を招くため厳禁です。専門医の管理のもと、安全に使用してください。
 </div>
+
 <div style="margin-top:15px;display:flex;align-items:center;gap:10px;">
 <input type="checkbox" id="agreeCheck">
 <label for="agreeCheck" style="margin:0;font-size:18px;font-weight:700;">上記内容を確認・同意しました</label>
 </div>
-<button type="submit" id="submitBtn">予約する</button>
+
+<button type="submit" id="submitBtn" disabled>予約する</button>
 </form>
 </div>
 <div id="completeArea" class="complete hidden"></div>
@@ -102,6 +107,14 @@ let holidays=[];
 let minDate="";
 let selectedTime="";
 
+password.addEventListener("input",function(){
+if(password.value.trim()!==""){
+loginBtn.disabled=false;
+}else{
+loginBtn.disabled=true;
+}
+});
+
 function post(action,data){
 return fetch(GAS_URL,{
 method:"POST",
@@ -111,6 +124,8 @@ body:JSON.stringify({action:action,...data})
 }
 
 function login(){
+loginBtn.disabled=true;
+
 post("authenticate",{password:password.value})
 .then(res=>{
 if(res===true){
@@ -119,6 +134,7 @@ formArea.classList.remove("hidden");
 initData();
 }else{
 alert("パスワードが違います");
+loginBtn.disabled=false;
 }
 });
 }
@@ -138,6 +154,33 @@ o.textContent=opt.label;
 setCount.appendChild(o);
 });
 });
+}
+
+const requiredInputs=document.querySelectorAll("#reservationForm input[required],#reservationForm select[required]");
+
+requiredInputs.forEach(function(el){
+el.addEventListener("input",checkForm);
+el.addEventListener("change",checkForm);
+});
+
+function checkForm(){
+let filled=true;
+
+requiredInputs.forEach(function(el){
+if(!el.value){
+filled=false;
+}
+});
+
+if(!agreeCheck.checked){
+filled=false;
+}
+
+if(!selectedTime){
+filled=false;
+}
+
+submitBtn.disabled=!filled;
 }
 
 birthDate.addEventListener("change",function(){
@@ -191,6 +234,7 @@ morningBtn.onclick=function(){
 selectedTime="午前";
 morningBtn.classList.add("active");
 afternoonBtn.classList.remove("active");
+checkForm();
 };
 
 afternoonBtn.onclick=function(){
@@ -201,10 +245,14 @@ return;
 selectedTime="午後";
 afternoonBtn.classList.add("active");
 morningBtn.classList.remove("active");
+checkForm();
 };
 
 reservationForm.addEventListener("submit",function(e){
 e.preventDefault();
+
+submitBtn.disabled=true;
+submitBtn.classList.add("locked");
 
 if(!selectedTime){
 alert("時間帯を選択してください");
@@ -239,6 +287,7 @@ completeArea.classList.remove("hidden");
 completeArea.innerHTML="<h3>予約が完了しました</h3><p>予約番号："+res.reservationNumber+"</p><p>予約内容確認メールをご指定のメールアドレスに送信致しました。当日は確認メールに記載された〖予約番号〗を窓口でお伝えください</p><p>北田内科クリニック</p><button onclick=\"window.location.href='https://www.kitadaclinic.com/'\" style=\"margin-top:20px;padding:16px;width:100%;font-size:18px;font-weight:700;border-radius:10px;border:none;background:#007bff;color:white;min-height:50px;\">北田内科クリニック公式ホームページへ</button>";
 }else{
 alert(res.message);
+submitBtn.disabled=false;
 }
 });
 
