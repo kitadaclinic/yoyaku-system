@@ -58,7 +58,7 @@ input,select{width:100%;padding:16px;margin-top:8px;font-size:18px;font-weight:6
 <label>名</label><input type="text" id="firstName" required>
 <label>セイ</label><input type="text" id="lastKana" required>
 <label>メイ</label><input type="text" id="firstKana" required>
-<label>生年月日</label><input type="date" id="birthDate" required>
+<label>生年月日（18歳未満は申し込みできません）</label><input type="date" id="birthDate" required>
 <label>住所</label><input type="text" id="address" required>
 <label>電話番号</label><input type="tel" id="phone" required>
 <label>メールアドレス</label><input type="email" id="email" required>
@@ -139,6 +139,25 @@ setCount.appendChild(o);
 });
 });
 }
+
+birthDate.addEventListener("change",function(){
+
+const today=new Date();
+const birth=new Date(this.value);
+
+let age=today.getFullYear()-birth.getFullYear();
+const m=today.getMonth()-birth.getMonth();
+
+if(m<0 || (m===0 && today.getDate()<birth.getDate())){
+age--;
+}
+
+if(age<18){
+alert("18歳未満は申し込みできません");
+this.value="";
+}
+
+});
 
 reservationDate.addEventListener("change",function(){
 
