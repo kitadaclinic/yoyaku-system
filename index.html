@@ -26,7 +26,7 @@ html,body{
 }
 @media (min-width: 769px) {
   html,body{
-    background-size: 20% 200px;
+    background-size: 20% 190px;
   }
 }
 img{max-width:100%;height:auto;display:block;}
@@ -81,15 +81,15 @@ pointer-events:none;
 <div id="formArea" class="hidden">
 <form id="reservationForm">
 
-<label>紹介コード</label><input type="text" id="referralCode" required>
+<label>紹介コード（例：a123）</label><input type="text" id="referralCode" required>
 
 <label>姓</label><input type="text" id="lastName" required>
 <label>名</label><input type="text" id="firstName" required>
 <label>セイ</label><input type="text" id="lastKana" required>
 <label>メイ</label><input type="text" id="firstKana" required>
 <label>生年月日（18歳未満：購入不可）</label><input type="date" id="birthDate" required>
-<label>住所</label><input type="text" id="address" required>
-<label>電話番号</label><input type="tel" id="phone" required>
+<label>住所（例：岐阜市神田町１－１）</label><input type="text" id="address" required>
+<label>電話番号（例：09012345678）</label><input type="tel" id="phone" required>
 <label>メールアドレス</label><input type="email" id="email" required>
 <label>初回購入</label>
 <select id="firstPurchase" required>
@@ -99,7 +99,7 @@ pointer-events:none;
 </select>
 <label>セット数（2.5mg）※初診料含みます</label><select id="setCount"></select>
 <label>受取日（本日から4営業日以降）</label><input type="date" id="reservationDate" required>
-<label>時間帯</label>
+<label>時間帯（診療時間内）</label>
 <div class="time-buttons">
 <button type="button" id="morningBtn">午前</button>
 <button type="button" id="afternoonBtn">午後</button>
@@ -311,7 +311,7 @@ post("submitReservation",{data:data}).then(res=>{
 if(res.status==="success"){
 formArea.classList.add("hidden");
 completeArea.classList.remove("hidden");
-completeArea.innerHTML="<h3>予約が完了しました</h3><p>予約番号："+res.reservationNumber+"</p><p>予約内容確認メールをご指定のメールアドレスに送信致しました。当日は確認メールに記載された〖予約番号〗を窓口でお伝えください</p><p>北田内科クリニック</p><button onclick=\"window.location.href='https://www.kitadaclinic.com/'\" style=\"margin-top:20px;padding:16px;width:100%;font-size:18px;font-weight:700;border-radius:10px;border:none;background:#007bff;color:white;min-height:50px;\">北田内科クリニック公式ホームページへ</button>";
+completeArea.innerHTML="<h2>予約が完了しました</h2><h3>★この画面のスクショを推奨します★</h3><p>【 予約番号 】："+res.reservationNumber+"</p><p>予約内容確認メールをご指定のメールアドレスに送信致しました。（送信元：kitada.medical.clinic@gmail.com）当日は確認メール、もしくは本画面のスクショに記載された【 予約番号 】を窓口でお知らせください</p><p>北田内科クリニック</p><button onclick=\"window.location.href='https://www.kitadaclinic.com/'\" style=\"margin-top:20px;padding:16px;width:100%;font-size:18px;font-weight:700;border-radius:10px;border:none;background:#007bff;color:white;min-height:50px;\">北田内科クリニック公式ホームページへ</button>";
 }else{
 alert(res.message);
 submitBtn.disabled=false;
