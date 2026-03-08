@@ -90,7 +90,7 @@ pointer-events:none;
 <label>生年月日（18歳未満：購入不可）</label><input type="date" id="birthDate" required>
 <label>住所（例：岐阜市神田町１－１）</label><input type="text" id="address" required>
 <label>電話番号（例：09012345678）</label><input type="tel" id="phone" required>
-<label>メールアドレス</label><input type="email" id="email" required>
+<label>メールアドレス（確認メール受信用）</label><input type="email" id="email" required>
 <label>初回購入</label>
 <select id="firstPurchase" required>
 <option value="">選択してください</option>
@@ -311,7 +311,7 @@ post("submitReservation",{data:data}).then(res=>{
 if(res.status==="success"){
 formArea.classList.add("hidden");
 completeArea.classList.remove("hidden");
-completeArea.innerHTML="<h2>予約が完了しました</h2><h5>★本画面のスクショを推奨★</h5><p>【 予約番号 】："+res.reservationNumber+"</p><p>予約内容確認メールをご指定のメールアドレスに送信致しました。（送信元：kitada.medical.clinic@gmail.com）<br>当日は確認メール、もしくは本画面に記載された【 予約番号 】を窓口でお知らせください</p><p>北田内科クリニック</p><button onclick=\"window.location.href='https://www.kitadaclinic.com/'\" style=\"margin-top:20px;padding:16px;width:100%;font-size:18px;font-weight:700;border-radius:10px;border:none;background:#007bff;color:white;min-height:50px;\">北田内科クリニック公式ホームページへ</button>";
+completeArea.innerHTML="<h3>予約が完了しました</h3><h5>★本画面のスクショを推奨★</h5><p>【 予約番号 】："+res.reservationNumber+"</p><p>予約内容確認メールをご指定のメールアドレスに送信致しました。（送信元：kitada.medical.clinic@gmail.com）<br>当日は確認メール、もしくは本画面に記載された【 予約番号 】を窓口でお知らせください</p><p>北田内科クリニック</p><button onclick=\"window.location.href='https://www.kitadaclinic.com/'\" style=\"margin-top:20px;padding:16px;width:100%;font-size:18px;font-weight:700;border-radius:10px;border:none;background:#007bff;color:white;min-height:50px;\">北田内科クリニック公式ホームページへ</button>";
 }else{
 alert(res.message);
 submitBtn.disabled=false;
