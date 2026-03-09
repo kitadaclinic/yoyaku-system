@@ -7,6 +7,11 @@
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
   <title>北田内科クリニック 予約システム</title>
 <style>
+/* 全要素にbox-sizingを適用し、iPhoneでの幅突き抜け（右端はみ出し）を防止 */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 html,body{
   margin:0;
   padding:0;
@@ -33,9 +38,10 @@ img{max-width:100%;height:auto;display:block;}
 .hero{background-size:cover;background-position:center;height:230px;display:flex;flex-direction:column;justify-content:center;align-items:center;color:white;text-align:center;padding:0 10px;}
 .hero h1{margin:0;font-size:28px;font-weight:800;}
 .hero h2{margin-top:8px;font-size:20px;font-weight:700;}
-.container{max-width:420px;width:100%;box-sizing:border-box;margin:-35px auto 40px auto;background:white;border-radius:14px;padding:25px 20px 35px 20px;box-shadow:0 8px 25px rgba(0,0,0,0.08);}
+.container{max-width:420px;width:100%;margin:-35px auto 40px auto;background:white;border-radius:14px;padding:25px 20px 35px 20px;box-shadow:0 8px 25px rgba(0,0,0,0.08);}
 label{display:block;margin-top:20px;font-size:18px;font-weight:700;}
-input,select{width:100%;padding:16px;margin-top:8px;font-size:18px;font-weight:600;border-radius:10px;border:1.5px solid #bbb;box-sizing:border-box;background:white;}
+/* inputの幅を100%に固定し、枠線を含めた計算に統一 */
+input,select{width:100%;padding:16px;margin-top:8px;font-size:18px;font-weight:600;border-radius:10px;border:1.5px solid #bbb;background:white;display:block;}
 .invalid-date{background:#ffe5e5;color:red;}
 .time-buttons{display:flex;gap:10px;margin-top:10px;}
 .time-buttons button{flex:1;padding:16px;min-height:50px;font-size:18px;font-weight:700;border-radius:10px;border:none;background:#e9ecef;cursor:pointer;}
@@ -120,7 +126,7 @@ pointer-events:none;
 <label for="agreeCheck" style="margin:0;font-size:18px;font-weight:700;">上記内容を確認・同意しました</label>
 </div>
 
-<!-- ガイドメッセージ表示用エリア -->
+<!-- 未入力項目ガイドメッセージエリア -->
 <div id="validationMessage" style="color: #dc3545; font-size: 15px; font-weight: 700; margin-top: 15px; text-align: center; min-height: 24px;"></div>
 
 <button type="submit" id="submitBtn" disabled>予約する</button>
@@ -214,65 +220,77 @@ filled=false;
 submitBtn.disabled=!filled;
 }
 
-// 生年月日の不具合修正：changeからblur（フォーカス離脱）に変更しiPhoneのドラムロール誤作動を防止
-birthDate.addEventListener("blur",function(){
-if(!this.value) return;
-const today=new Date();
-// iOS互換性のためハイフンをスラッシュに置換
-const birth=new Date(this.value.replace(/-/g, "/"));
-if(isNaN(birth.getTime())) return;
+/**
+ * 18歳未満チェック（最強対策版）
+ * blur(離脱)時に加え、送信ボタン押下時にも再実行する
+ */
+function validateAge(inputElement) {
+  if(!inputElement.value) return true;
+  const today=new Date();
+  const birth=new Date(inputElement.value.replace(/-/g, "/"));
+  if(isNaN(birth.getTime())) return true;
+  
+  // 未来の日付や極端に古い日付はiPhoneの入力中誤作動とみなしスルー
+  if(birth > today || birth.getFullYear() < 1900) return true;
 
-// 未来の日付や極端に古い日付は判定をスキップ（iPhoneの入力中誤作動防止）
-if(birth > today || birth.getFullYear() < 1900) return;
+  let age=today.getFullYear()-birth.getFullYear();
+  const m=today.getMonth()-birth.getMonth();
+  if(m<0 || (m===0 && today.getDate()<birth.getDate())){ age--; }
 
-let age=today.getFullYear()-birth.getFullYear();
-const m=today.getMonth()-birth.getMonth();
-
-if(m<0 || (m===0 && today.getDate()<birth.getDate())){
-age--;
+  if(age<18){
+    alert("18歳未満は申し込みできません");
+    inputElement.value="";
+    return false;
+  }
+  return true;
 }
 
-if(age<18){
-alert("18歳未満は申し込みできません");
-this.value="";
-checkFormComplete();
-}
-
+birthDate.addEventListener("blur", function(){
+  validateAge(this);
+  checkFormComplete();
 });
 
+/**
+ * 受取日チェック（最強対策版）
+ * 4営業日ルール、日曜、祝日を徹底判定
+ */
+function validateReservationDate(inputElement) {
+  if(!inputElement.value) return true;
+  const d=new Date(inputElement.value.replace(/-/g, "/"));
+  const day=d.getDay();
+  const selectedDate = inputElement.value;
+
+  if(selectedDate < minDate){
+    alert("4営業日以降の日付を選択してください");
+    inputElement.value="";
+    return false;
+  }
+  if(day===0){
+    alert("日曜日は選択できません");
+    inputElement.value="";
+    return false;
+  }
+  if(holidays.includes(selectedDate)){
+    alert("祝日は選択できません");
+    inputElement.value="";
+    return false;
+  }
+  return true;
+}
+
 reservationDate.addEventListener("change",function(){
-if(!this.value) return;
-const d=new Date(this.value.replace(/-/g, "/"));
-const day=d.getDay();
-const selectedDate = this.value;
-
-if(selectedDate < minDate){
-  alert("4営業日以降の日付を選択してください");
-  this.value="";
-  return;
-}
-
-if(day===0){
-alert("日曜日は選択できません");
-this.value="";
-return;
-}
-
-if(holidays.includes(this.value)){
-alert("祝日は選択できません");
-this.classList.add("invalid-date");
-this.value="";
-return;
-}else{
-this.classList.remove("invalid-date");
-}
-
-if(day===3 || day===6){
-afternoonBtn.classList.add("disabled");
-}else{
-afternoonBtn.classList.remove("disabled");
-}
-
+  if(!validateReservationDate(this)) {
+    this.classList.add("invalid-date");
+    return;
+  }
+  this.classList.remove("invalid-date");
+  const d=new Date(this.value.replace(/-/g, "/"));
+  if(d.getDay()===3 || d.getDay()===6){
+    afternoonBtn.classList.add("disabled");
+  }else{
+    afternoonBtn.classList.remove("disabled");
+  }
+  checkFormComplete();
 });
 
 morningBtn.onclick=function(){
@@ -280,6 +298,7 @@ selectedTime="午前";
 morningBtn.classList.add("active");
 afternoonBtn.classList.remove("active");
 checkForm();
+checkFormComplete();
 };
 
 afternoonBtn.onclick=function(){
@@ -291,21 +310,30 @@ selectedTime="午後";
 afternoonBtn.classList.add("active");
 morningBtn.classList.remove("active");
 checkForm();
+checkFormComplete();
 };
 
 reservationForm.addEventListener("submit",function(e){
 e.preventDefault();
+
+// --- 送信前の二段構えチェック ---
+if(!validateAge(birthDate)) return;
+if(!validateReservationDate(reservationDate)) return;
 
 submitBtn.disabled=true;
 submitBtn.classList.add("locked");
 
 if(!selectedTime){
 alert("時間帯を選択してください");
+submitBtn.disabled=false;
+submitBtn.classList.remove("locked");
 return;
 }
 
 if(!agreeCheck.checked){
 alert("上記内容を確認・同意してください");
+submitBtn.disabled=false;
+submitBtn.classList.remove("locked");
 return;
 }
 
@@ -333,43 +361,23 @@ completeArea.innerHTML="<h3>予約が完了しました</h3><h5>★本画面の�
 }else{
 alert(res.message);
 submitBtn.disabled=false;
+submitBtn.classList.remove("locked");
 }
 });
 
 });
-/* ===== フォーム入力チェック追加 ===== */
 
+/* ===== 入力ガイドメッセージ制御ロジック ===== */
 const loginBtnElement = document.getElementById("loginBtn");
 const submitBtnElement = document.getElementById("submitBtn");
 const msgArea = document.getElementById("validationMessage");
 
-/* ログインボタン初期状態 */
+// ログインボタンの初期スタイル
 if(loginBtnElement){
-loginBtnElement.style.background="#c9c9c9";
-loginBtnElement.disabled=true;
-
-password.addEventListener("input",function(){
-
-if(password.value.trim()!==""){
-loginBtnElement.disabled=false;
-loginBtnElement.style.background="#007bff";
-}else{
-loginBtnElement.disabled=true;
-loginBtnElement.style.background="#c9c9c9";
+  loginBtnElement.style.background="#c9c9c9";
 }
 
-});
-}
-
-/* 予約ボタン初期状態 */
-if(submitBtnElement){
-submitBtnElement.style.background="#c9c9c9";
-submitBtnElement.disabled=true;
-}
-
-/* 入力チェック：未入力項目を特定しメッセージを表示 */
 function checkFormComplete(){
-
   let message = "";
   if(!referralCode.value){
     message = "※紹介コードを入力してください";
@@ -395,70 +403,35 @@ function checkFormComplete(){
     message = "※重要事項への同意チェックが必要です";
   }
 
-if(
-referralCode.value &&
-lastName.value &&
-firstName.value &&
-lastKana.value &&
-firstKana.value &&
-birthDate.value &&
-address.value &&
-phone.value &&
-email.value &&
-firstPurchase.value &&
-setCount.value &&
-reservationDate.value &&
-selectedTime &&
-agreeCheck.checked
-){
-submitBtnElement.disabled=false;
-submitBtnElement.style.background="#007bff";
-msgArea.textContent = "";
-}else{
-submitBtnElement.disabled=true;
-submitBtnElement.style.background="#c9c9c9";
-msgArea.textContent = message;
+  if(
+    referralCode.value && lastName.value && firstName.value && lastKana.value &&
+    firstKana.value && birthDate.value && address.value && phone.value &&
+    email.value && firstPurchase.value && setCount.value && reservationDate.value &&
+    selectedTime && agreeCheck.checked
+  ){
+    submitBtnElement.disabled=false;
+    submitBtnElement.style.background="#007bff";
+    msgArea.textContent = "";
+  }else{
+    submitBtnElement.disabled=true;
+    submitBtnElement.style.background="#c9c9c9";
+    msgArea.textContent = message;
+  }
 }
 
-}
-
-/* 入力監視 */
+// 全ての必須項目に監視イベントを登録
 [
-referralCode,
-lastName,
-firstName,
-lastKana,
-firstKana,
-birthDate,
-address,
-phone,
-email,
-firstPurchase,
-setCount,
-reservationDate,
-agreeCheck
+referralCode,lastName,firstName,lastKana,firstKana,birthDate,address,phone,email,firstPurchase,setCount,reservationDate,agreeCheck
 ].forEach(el=>{
-el.addEventListener("change",checkFormComplete);
-el.addEventListener("input",checkFormComplete);
+  el.addEventListener("change",checkFormComplete);
+  el.addEventListener("input",checkFormComplete);
 });
 
-/* 時間選択監視 */
-const originalMorning = morningBtn.onclick;
-morningBtn.onclick=function(){
-originalMorning.call(this);
-checkFormComplete();
-};
-
-const originalAfternoon = afternoonBtn.onclick;
-afternoonBtn.onclick=function(){
-originalAfternoon.call(this);
-checkFormComplete();
-};
-
-/* 送信後ロック */
+// 送信中表示
 reservationForm.addEventListener("submit",function(){
-submitBtnElement.disabled=true;
-submitBtnElement.style.background="#555";
+  if(!submitBtnElement.disabled){
+    msgArea.textContent = "送信中です。しばらくお待ちください...";
+  }
 });
 </script>
 </body>
