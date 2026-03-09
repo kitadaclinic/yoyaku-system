@@ -120,6 +120,9 @@ pointer-events:none;
 <label for="agreeCheck" style="margin:0;font-size:18px;font-weight:700;">上記内容を確認・同意しました</label>
 </div>
 
+<!-- ガイドメッセージ表示用エリア -->
+<div id="validationMessage" style="color: #dc3545; font-size: 15px; font-weight: 700; margin-top: 15px; text-align: center; min-height: 24px;"></div>
+
 <button type="submit" id="submitBtn" disabled>予約する</button>
 </form>
 </div>
@@ -332,6 +335,7 @@ submitBtn.disabled=false;
 
 const loginBtnElement = document.getElementById("loginBtn");
 const submitBtnElement = document.getElementById("submitBtn");
+const msgArea = document.getElementById("validationMessage");
 
 /* ログインボタン初期状態 */
 if(loginBtnElement){
@@ -360,6 +364,31 @@ submitBtnElement.disabled=true;
 /* 入力チェック */
 function checkFormComplete(){
 
+  let message = "";
+  if(!referralCode.value){
+    message = "※紹介コードを入力してください";
+  } else if(!lastName.value || !firstName.value || !lastKana.value || !firstKana.value){
+    message = "※お名前（漢字・カナ）を入力してください";
+  } else if(!birthDate.value){
+    message = "※生年月日を入力してください";
+  } else if(!address.value){
+    message = "※住所を入力してください";
+  } else if(!phone.value){
+    message = "※電話番号を入力してください";
+  } else if(!email.value){
+    message = "※メールアドレスを入力してください";
+  } else if(!firstPurchase.value){
+    message = "※初回購入の有無を選択してください";
+  } else if(!setCount.value){
+    message = "※セット数を選択してください";
+  } else if(!reservationDate.value){
+    message = "※受取日を選択してください";
+  } else if(!selectedTime){
+    message = "※時間帯（午前・午後）を選択してください";
+  } else if(!agreeCheck.checked){
+    message = "※重要事項への同意チェックが必要です";
+  }
+
 if(
 referralCode.value &&
 lastName.value &&
@@ -378,9 +407,11 @@ agreeCheck.checked
 ){
 submitBtnElement.disabled=false;
 submitBtnElement.style.background="#007bff";
+msgArea.textContent = "";
 }else{
 submitBtnElement.disabled=true;
 submitBtnElement.style.background="#c9c9c9";
+msgArea.textContent = message;
 }
 
 }
