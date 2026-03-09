@@ -214,11 +214,16 @@ filled=false;
 submitBtn.disabled=!filled;
 }
 
-birthDate.addEventListener("change",function(){
+// 生年月日の不具合修正：changeからblur（フォーカス離脱）に変更しiPhoneのドラムロール誤作動を防止
+birthDate.addEventListener("blur",function(){
 if(!this.value) return;
 const today=new Date();
-const birth=new Date(this.value);
+// iOS互換性のためハイフンをスラッシュに置換
+const birth=new Date(this.value.replace(/-/g, "/"));
 if(isNaN(birth.getTime())) return;
+
+// 未来の日付や極端に古い日付は判定をスキップ（iPhoneの入力中誤作動防止）
+if(birth > today || birth.getFullYear() < 1900) return;
 
 let age=today.getFullYear()-birth.getFullYear();
 const m=today.getMonth()-birth.getMonth();
@@ -230,6 +235,7 @@ age--;
 if(age<18){
 alert("18歳未満は申し込みできません");
 this.value="";
+checkFormComplete();
 }
 
 });
@@ -361,7 +367,7 @@ submitBtnElement.style.background="#c9c9c9";
 submitBtnElement.disabled=true;
 }
 
-/* 入力チェック */
+/* 入力チェック：未入力項目を特定しメッセージを表示 */
 function checkFormComplete(){
 
   let message = "";
