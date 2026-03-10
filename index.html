@@ -3,13 +3,12 @@
 <head>
   <base target="_top">
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
   <title>北田内科クリニック 予約システム</title>
 <style>
-/* 全要素にbox-sizingを適用し、iPhoneでの幅突き抜けを物理的に防止 */
+/* iPhoneでの幅突き抜けを物理的に防止 */
 *, *::before, *::after {
   box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent;
 }
 
 html, body {
@@ -22,7 +21,8 @@ html, body {
   background: #f4f6f9;
   font-size: 18px;
   -webkit-text-size-adjust: 100%;
-  
+  touch-action: pan-y;
+
   background-image: url("自由診療ロゴ.png");
   background-size: contain;
   background-repeat: no-repeat;
@@ -30,7 +30,9 @@ html, body {
 }
 
 @media (min-width: 769px) {
-  html, body { background-size: 20% 190px; }
+  html, body {
+    background-size: 20% 190px;
+  }
 }
 
 .hero {
@@ -68,7 +70,7 @@ input, select {
   border: 1.5px solid #bbb;
   background: white;
   display: block;
-  -webkit-appearance: none;
+  -webkit-appearance: none; /* iPhone Safariのデフォルトスタイルリセット */
 }
 
 .time-buttons { display: flex; gap: 10px; margin-top: 10px; }
@@ -101,14 +103,14 @@ input, select {
 }
 
 .hidden { display: none; }
-.complete { text-align: center; padding: 40px 10px; word-break: break-word; }
+.complete { text-align: center; padding: 40px 10px; word-break: break-word; overflow-wrap: break-word; }
 #agreeCheck { width: 26px; height: 26px; -webkit-appearance: checkbox; }
 
 button:disabled { background: #bfc4c9; cursor: not-allowed; }
 .locked { background: #6c757d !important; }
 
 @media(max-width:600px){
-  .container { width: 95%; max-width: 100%; margin-top: -20px; border-radius: 12px; }
+  .container { width: 95%; max-width: 100%; margin-top: -20px; border-radius: 12px; padding: 22px 16px 30px 16px; }
 }
 </style>
 </head>
@@ -182,15 +184,17 @@ let holidays=[];
 let minDateStr="";
 let selectedTime="";
 
-// ページ読み込み時に最優先でmin属性をセット（物理的制限）
+// ページ読み込み時に最優先で制限日を取得・セット（iPhone Chrome等への対策）
 window.onload = function() {
   post("getInitialCalendarData",{}).then(data=>{
     holidays = data.holidays;
     minDateStr = data.minDate;
+    // 物理的に選択できないようにmin属性をセット
     reservationDate.min = minDateStr;
   });
 };
 
+// パスワード監視（ログインボタン色変更）
 password.addEventListener("input", function(){
   if(this.value.trim() !== ""){
     loginBtn.disabled = false;
@@ -225,6 +229,7 @@ function login(){
 }
 
 function initData(){
+  // セット数取得
   post("getSetOptions",{}).then(list=>{
     setCount.innerHTML="";
     list.forEach(function(opt){
@@ -236,7 +241,7 @@ function initData(){
   });
 }
 
-// 生年月日バリデーション（送信時のみ実行）
+// 申込ボタン押下時の生年月日厳格チェック
 function finalValidateAge() {
   const val = birthDate.value;
   if(!val) return false;
@@ -248,6 +253,7 @@ function finalValidateAge() {
   const m = today.getMonth() - birth.getMonth();
   if(m < 0 || (m === 0 && today.getDate() < birth.getDate())){ age--; }
 
+  // 18歳未満のみエラーを出す（論理エラー修正）
   if(age < 18){
     alert("18歳未満は申し込みできません");
     return false;
@@ -255,23 +261,17 @@ function finalValidateAge() {
   return true;
 }
 
-// 受取日バリデーション（送信時のみ実行）
-function finalValidateDate() {
-  const val = reservationDate.value;
-  if(!val) return false;
-  const d = new Date(val.replace(/-/g, "/"));
-  const day = d.getDay();
-
-  if(val < minDateStr || day === 0 || holidays.includes(val)){
-    alert("選択された受取日は休診日または指定不可の日付です");
-    return false;
-  }
-  return true;
-}
-
-// 物理的制限：水曜・土曜の午後無効化のみchangeで即時実行（アラートなし）
+// 受取日の物理的制限・水土午後無効化（iPhone対策でアラートなし）
 reservationDate.addEventListener("change", function(){
-  const d = new Date(this.value.replace(/-/g, "/"));
+  const val = this.value;
+  // 万が一物理制限を抜けて4営業日以内が選ばれた場合のリセット
+  if(val && val < minDateStr){
+    this.value = "";
+    checkFormComplete();
+    return;
+  }
+
+  const d = new Date(val.replace(/-/g, "/"));
   if(d.getDay() === 3 || d.getDay() === 6){
     afternoonBtn.classList.add("disabled");
     if(selectedTime === "午後"){
@@ -312,29 +312,32 @@ function checkFormComplete(){
   } else {
     submitBtn.disabled = true;
     submitBtn.style.background = "#c9c9c9";
-    // メッセージは出すがアラートは出さない
+    // 進行ガイドメッセージ
     if(!agreeCheck.checked && reservationDate.value && selectedTime) {
-        validationMessage.textContent = "※同意チェックが必要です";
+      validationMessage.textContent = "※重要事項への同意チェックが必要です";
+    } else {
+      validationMessage.textContent = "※未入力の項目があります";
     }
   }
 }
 
-// 入力監視（アラートを一切出さない安全なチェック）
-[referralCode,lastName,firstName,lastKana,firstKana,birthDate,address,phone,email,firstPurchase,setCount,reservationDate,agreeCheck].forEach(el=>{
+// 監視イベント
+[referralCode,lastName,firstName,lastKana,firstKana,address,phone,email,firstPurchase,setCount,agreeCheck].forEach(el=>{
   el.addEventListener("input", checkFormComplete);
+});
+[birthDate, reservationDate, firstPurchase, setCount, agreeCheck].forEach(el=>{
   el.addEventListener("change", checkFormComplete);
 });
 
+// 送信処理
 reservationForm.addEventListener("submit",function(e){
   e.preventDefault();
   
-  // 最後の申込ボタン押下時にのみエラーを確認して出す（iPhone Safari即閉じ対策）
   if(!finalValidateAge()) return;
-  if(!finalValidateDate()) return;
 
   submitBtn.disabled=true;
   submitBtn.classList.add("locked");
-  validationMessage.textContent = "送信中です...";
+  validationMessage.textContent = "送信中です。しばらくお待ちください...";
 
   const data={
     referralCode:referralCode.value,
@@ -356,7 +359,8 @@ reservationForm.addEventListener("submit",function(e){
     if(res.status==="success"){
       formArea.classList.add("hidden");
       completeArea.classList.remove("hidden");
-      completeArea.innerHTML="<h3>予約が完了しました</h3><h5>★スクショ推奨★</h5><p>予約番号："+res.reservationNumber+"</p><p>メールを送信しました。</p><p>北田内科クリニック</p><button onclick=\"window.location.href='https://www.kitadaclinic.com/'\" style=\"margin-top:20px;padding:16px;width:100%;font-size:18px;font-weight:700;border-radius:10px;border:none;background:#007bff;color:white;min-height:50px;\">公式HPへ</button>";
+      // 文言・構成を完全に復元
+      completeArea.innerHTML="<h3>予約が完了しました</h3><h5>★本画面のスクショを推奨★</h5><p>【 予約番号 】："+res.reservationNumber+"</p><p>予約内容確認メールをご指定のメールアドレスに送信致しました。（送信元：kitada.medical.clinic@gmail.com）<br>当日は確認メール、もしくは本画面に記載された【 予約番号 】を窓口でお知らせください</p><p>北田内科クリニック</p><button onclick=\"window.location.href='https://www.kitadaclinic.com/'\" style=\"margin-top:20px;padding:16px;width:100%;font-size:18px;font-weight:700;border-radius:10px;border:none;background:#007bff;color:white;min-height:50px;\">北田内科クリニック公式ホームページへ</button>";
     }else{
       alert(res.message);
       submitBtn.disabled=false;
