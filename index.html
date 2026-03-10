@@ -182,7 +182,6 @@ let holidays=[];
 let minDateStr="";
 let selectedTime="";
 
-// iPhoneのブラウザ対策：ページ読み込み時に最速で制限をかける
 window.onload = function() {
   post("getInitialCalendarData",{}).then(data=>{
     holidays = data.holidays;
@@ -216,7 +215,6 @@ function login(){
     if(res===true){
       loginArea.classList.add("hidden");
       formArea.classList.remove("hidden");
-      // ログイン後、フォームが表示された瞬間に再度属性をセットして認識させる
       if(minDateStr) reservationDate.min = minDateStr;
       initData();
     }else{
@@ -256,16 +254,22 @@ function finalValidateAge() {
   return true;
 }
 
-// 受取日の物理制御（iPhone対策でアラートなし）
 reservationDate.addEventListener("change", function(){
   const val = this.value;
-  // 万が一グレーアウトを無視して4営業日以内が選ばれた場合、値を消去して確定させない
+  
+  // iPhone対策：4営業日以内が選択された場合
   if(val && minDateStr && val < minDateStr){
+    const dLimit = new Date(minDateStr.replace(/-/g, "/"));
+    const formattedLimit = (dLimit.getMonth() + 1) + "月" + dLimit.getDate() + "日";
+    
+    // 入力欄をリセットし、具体的なメッセージを表示
     this.value = "";
+    validationMessage.textContent = "※" + formattedLimit + "以降の日付を選択してください";
     checkFormComplete();
     return;
   }
 
+  // 正常な日付が選ばれた場合はメッセージを消す可能性があるためチェック
   const d = new Date(val.replace(/-/g, "/"));
   if(d.getDay() === 3 || d.getDay() === 6){
     afternoonBtn.classList.add("disabled");
@@ -307,24 +311,37 @@ function checkFormComplete(){
   } else {
     submitBtn.disabled = true;
     submitBtn.style.background = "#c9c9c9";
-    if(!agreeCheck.checked && reservationDate.value && selectedTime) {
-      validationMessage.textContent = "※重要事項への同意チェックが必要です";
-    } else {
-      validationMessage.textContent = "※未入力の項目があります";
+    
+    // 日付エラーメッセージが出ていない場合のみ、他のガイドを表示
+    if(!validationMessage.textContent.includes("以降の日付")) {
+      if(!agreeCheck.checked && reservationDate.value && selectedTime) {
+        validationMessage.textContent = "※重要事項への同意チェックが必要です";
+      } else {
+        validationMessage.textContent = "※未入力の項目があります";
+      }
     }
   }
 }
 
 [referralCode,lastName,firstName,lastKana,firstKana,address,phone,email,firstPurchase,setCount,agreeCheck].forEach(el=>{
-  el.addEventListener("input", checkFormComplete);
+  el.addEventListener("input", function() {
+    // 他の項目入力時に日付エラーが出ていなければメッセージを更新
+    if(!validationMessage.textContent.includes("以降の日付")) {
+      checkFormComplete();
+    }
+  });
 });
+
 [birthDate, reservationDate, firstPurchase, setCount, agreeCheck].forEach(el=>{
-  el.addEventListener("change", checkFormComplete);
+  el.addEventListener("change", function() {
+    if(!validationMessage.textContent.includes("以降の日付") || el === reservationDate) {
+      checkFormComplete();
+    }
+  });
 });
 
 reservationForm.addEventListener("submit",function(e){
   e.preventDefault();
-  
   if(!finalValidateAge()) return;
 
   submitBtn.disabled=true;
