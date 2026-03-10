@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
   <title>北田内科クリニック 予約システム</title>
 <style>
-/* iPhoneでの幅突き抜けを物理的に防止 */
+/* iPhoneでの幅突き抜けを防止 */
 *, *::before, *::after {
   box-sizing: border-box;
 }
@@ -22,7 +22,6 @@ html, body {
   font-size: 18px;
   -webkit-text-size-adjust: 100%;
   touch-action: pan-y;
-
   background-image: url("自由診療ロゴ.png");
   background-size: contain;
   background-repeat: no-repeat;
@@ -30,9 +29,7 @@ html, body {
 }
 
 @media (min-width: 769px) {
-  html, body {
-    background-size: 20% 190px;
-  }
+  html, body { background-size: 20% 190px; }
 }
 
 .hero {
@@ -71,6 +68,22 @@ input, select {
   background: white;
   display: block;
   -webkit-appearance: none;
+}
+
+/* カレンダー直下のガイドメッセージ */
+#dateGuide {
+  margin-top: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  min-height: 20px;
+  color: #555;
+  padding-left: 5px;
+}
+.error-text { color: #dc3545 !important; animation: shake 0.3s; }
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
 }
 
 .time-buttons { display: flex; gap: 10px; margin-top: 10px; }
@@ -121,12 +134,14 @@ button:disabled { background: #bfc4c9; cursor: not-allowed; }
 </div>
 
 <div class="container">
+  <!-- ログイン -->
   <div id="loginArea">
     <label>パスワード</label>
     <input type="password" id="password">
     <button id="loginBtn" onclick="login()" style="margin-top:15px;padding:16px;width:100%;font-size:18px;font-weight:700;border-radius:10px;border:none;background:#c9c9c9;color:white;min-height:50px;" disabled>ログイン</button>
   </div>
 
+  <!-- フォーム -->
   <div id="formArea" class="hidden">
     <form id="reservationForm">
       <label>紹介コード（例：a123）</label><input type="text" id="referralCode" required>
@@ -145,7 +160,12 @@ button:disabled { background: #bfc4c9; cursor: not-allowed; }
         <option value="false">いいえ</option>
       </select>
       <label>セット数（2.5mg）※初診料含みます</label><select id="setCount"></select>
-      <label>受取日（本日から4営業日以降）</label><input type="date" id="reservationDate" required>
+      
+      <!-- 受取日 -->
+      <label>受取日（本日から4営業日以降）</label>
+      <input type="date" id="reservationDate" required>
+      <div id="dateGuide"></div> <!-- 常駐メッセージ表示用 -->
+
       <label>時間帯（診療時間内）</label>
       <div class="time-buttons">
         <button type="button" id="morningBtn">午前</button>
@@ -178,15 +198,15 @@ button:disabled { background: #bfc4c9; cursor: not-allowed; }
 
 <script>
 const GAS_URL="https://script.google.com/macros/s/AKfycbyZAVbcHORZuuavQsm9rkoARndvwtXX-hUQqUK5vIUJNB3oKg7vv9xE13bEw4RCKo05/exec";
-let holidays=[];
 let minDateStr="";
 let selectedTime="";
 
+// 初期読み込みで制限日を取得
 window.onload = function() {
   post("getInitialCalendarData",{}).then(data=>{
-    holidays = data.holidays;
     minDateStr = data.minDate;
     reservationDate.min = minDateStr;
+    updateDateGuide(false);
   });
 };
 
@@ -236,17 +256,17 @@ function initData(){
   });
 }
 
+// 18歳未満制限の論理修正版
 function finalValidateAge() {
   const val = birthDate.value;
   if(!val) return false;
   const today = new Date();
   const birth = new Date(val.replace(/-/g, "/"));
   if(isNaN(birth.getTime())) return false;
-  
   let age = today.getFullYear() - birth.getFullYear();
   const m = today.getMonth() - birth.getMonth();
   if(m < 0 || (m === 0 && today.getDate() < birth.getDate())){ age--; }
-
+  
   if(age < 18){
     alert("18歳未満は申し込みできません");
     return false;
@@ -254,22 +274,33 @@ function finalValidateAge() {
   return true;
 }
 
+// 日付ガイドの表示・更新
+function updateDateGuide(isError) {
+  if(!minDateStr) return;
+  const dLimit = new Date(minDateStr.replace(/-/g, "/"));
+  const formattedLimit = (dLimit.getMonth() + 1) + "月" + dLimit.getDate() + "日";
+  dateGuide.textContent = formattedLimit + " 以降の日付を選択してください";
+  
+  if(isError) {
+    dateGuide.classList.add("error-text");
+  } else {
+    dateGuide.classList.remove("error-text");
+  }
+}
+
+// 受取日変更イベント
 reservationDate.addEventListener("change", function(){
   const val = this.value;
   
-  // iPhone対策：4営業日以内が選択された場合
+  // 4営業日以内の選択を物理リセット
   if(val && minDateStr && val < minDateStr){
-    const dLimit = new Date(minDateStr.replace(/-/g, "/"));
-    const formattedLimit = (dLimit.getMonth() + 1) + "月" + dLimit.getDate() + "日";
-    
-    // 入力欄をリセットし、具体的なメッセージを表示
     this.value = "";
-    validationMessage.textContent = "※" + formattedLimit + "以降の日付を選択してください";
+    updateDateGuide(true);
     checkFormComplete();
     return;
   }
 
-  // 正常な日付が選ばれた場合はメッセージを消す可能性があるためチェック
+  updateDateGuide(false);
   const d = new Date(val.replace(/-/g, "/"));
   if(d.getDay() === 3 || d.getDay() === 6){
     afternoonBtn.classList.add("disabled");
@@ -311,9 +342,8 @@ function checkFormComplete(){
   } else {
     submitBtn.disabled = true;
     submitBtn.style.background = "#c9c9c9";
-    
-    // 日付エラーメッセージが出ていない場合のみ、他のガイドを表示
-    if(!validationMessage.textContent.includes("以降の日付")) {
+    // ガイド表示（日付エラーが優先）
+    if(!dateGuide.classList.contains("error-text")) {
       if(!agreeCheck.checked && reservationDate.value && selectedTime) {
         validationMessage.textContent = "※重要事項への同意チェックが必要です";
       } else {
@@ -324,22 +354,13 @@ function checkFormComplete(){
 }
 
 [referralCode,lastName,firstName,lastKana,firstKana,address,phone,email,firstPurchase,setCount,agreeCheck].forEach(el=>{
-  el.addEventListener("input", function() {
-    // 他の項目入力時に日付エラーが出ていなければメッセージを更新
-    if(!validationMessage.textContent.includes("以降の日付")) {
-      checkFormComplete();
-    }
-  });
+  el.addEventListener("input", checkFormComplete);
 });
-
 [birthDate, reservationDate, firstPurchase, setCount, agreeCheck].forEach(el=>{
-  el.addEventListener("change", function() {
-    if(!validationMessage.textContent.includes("以降の日付") || el === reservationDate) {
-      checkFormComplete();
-    }
-  });
+  el.addEventListener("change", checkFormComplete);
 });
 
+// 送信
 reservationForm.addEventListener("submit",function(e){
   e.preventDefault();
   if(!finalValidateAge()) return;
@@ -368,6 +389,7 @@ reservationForm.addEventListener("submit",function(e){
     if(res.status==="success"){
       formArea.classList.add("hidden");
       completeArea.classList.remove("hidden");
+      // 完了画面の文言復元
       completeArea.innerHTML="<h3>予約が完了しました</h3><h5>★本画面のスクショを推奨★</h5><p>【 予約番号 】："+res.reservationNumber+"</p><p>予約内容確認メールをご指定のメールアドレスに送信致しました。（送信元：kitada.medical.clinic@gmail.com）<br>当日は確認メール、もしくは本画面に記載された【 予約番号 】を窓口でお知らせください</p><p>北田内科クリニック</p><button onclick=\"window.location.href='https://www.kitadaclinic.com/'\" style=\"margin-top:20px;padding:16px;width:100%;font-size:18px;font-weight:700;border-radius:10px;border:none;background:#007bff;color:white;min-height:50px;\">北田内科クリニック公式ホームページへ</button>";
     }else{
       alert(res.message);
