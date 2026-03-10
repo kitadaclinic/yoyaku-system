@@ -3,127 +3,195 @@
 <head>
   <base target="_top">
   <meta charset="UTF-8">
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>北田内科クリニック 予約システム</title>
 <style>
-/* 全要素にbox-sizingを適用し、iPhoneでの幅突き抜けを物理的に防止 */
+/* iPhone Safariのはみ出し・突き抜けを物理的にリセット */
 *, *::before, *::after {
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 
-html,body{
-  margin:0;
-  padding:0;
-  width:100%;
-  overflow-x:hidden;
-  overflow-y:auto;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
-  background:#f4f6f9;
-  font-size:18px;
-  -webkit-text-size-adjust:100%;
-  touch-action: pan-y;
-
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: #f4f6f9;
+  font-size: 18px;
+  -webkit-text-size-adjust: 100%;
+  
   background-image: url("自由診療ロゴ.png");
   background-size: contain;
   background-repeat: no-repeat;
   background-position: top center;
 }
+
 @media (min-width: 769px) {
-  html,body{
-    background-size: 20% 190px;
-  }
+  html, body { background-size: 20% 190px; }
 }
-img{max-width:100%;height:auto;display:block;}
-.hero{background-size:cover;background-position:center;height:230px;display:flex;flex-direction:column;justify-content:center;align-items:center;color:white;text-align:center;padding:0 10px;}
-.hero h1{margin:0;font-size:28px;font-weight:800;}
-.hero h2{margin-top:8px;font-size:20px;font-weight:700;}
-.container{max-width:420px;width:100%;margin:-35px auto 40px auto;background:white;border-radius:14px;padding:25px 20px 35px 20px;box-shadow:0 8px 25px rgba(0,0,0,0.08);}
-label{display:block;margin-top:20px;font-size:18px;font-weight:700;}
-input,select{width:100%;padding:16px;margin-top:8px;font-size:18px;font-weight:600;border-radius:10px;border:1.5px solid #bbb;background:white;display:block;}
-.invalid-date{background:#ffe5e5;color:red;}
-.time-buttons{display:flex;gap:10px;margin-top:10px;}
-.time-buttons button{flex:1;padding:16px;min-height:50px;font-size:18px;font-weight:700;border-radius:10px;border:none;background:#e9ecef;cursor:pointer;}
-.active{background:#007bff!important;color:white;}
-.disabled{opacity:0.4;pointer-events:none;}
-#submitBtn{width:100%;padding:18px;margin-top:30px;font-size:19px;font-weight:800;border-radius:12px;border:none;background:#0056d6;color:white;cursor:pointer;min-height:56px;}
-.hidden{display:none;}
-.complete{text-align:center;padding:40px 10px;word-break:break-word;overflow-wrap:break-word;}
-#agreeCheck{width:26px;height:26px;}
-button:disabled{background:#bfc4c9;cursor:not-allowed;}
-.locked{background:#6c757d!important;}
-@media(max-width:600px){.container{width:100%;max-width:100%;margin:0;border-radius:0;padding:22px 16px 30px 16px;}}
+
+.hero {
+  height: 230px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  text-align: center;
+  padding: 0 10px;
+}
+.hero h1 { margin: 0; font-size: 28px; font-weight: 800; }
+.hero h2 { margin-top: 8px; font-size: 20px; font-weight: 700; }
+
+.container {
+  max-width: 420px;
+  width: 92%; /* iPhoneでの左右余白を確保し、枠線の消失を防止 */
+  margin: -35px auto 40px auto;
+  background: white;
+  border-radius: 14px;
+  padding: 25px 20px 35px 20px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+}
+
+label { display: block; margin-top: 20px; font-size: 18px; font-weight: 700; }
+
+/* iPhone Safariのデフォルトスタイルを解除し、幅を100%内に収める */
+input, select {
+  width: 100%;
+  padding: 16px;
+  margin-top: 8px;
+  font-size: 18px;
+  font-weight: 600;
+  border-radius: 10px;
+  border: 1.5px solid #bbb;
+  background: white;
+  display: block;
+  -webkit-appearance: none; /* iOSのデフォルトの丸みをリセットし、はみ出しを防止 */
+}
+
+/* 日付入力欄のiPhone Safari専用対策 */
+input[type="date"] {
+  min-height: 54px;
+}
+
+.invalid-date { background: #ffe5e5; color: red; }
+
+.time-buttons { display: flex; gap: 10px; margin-top: 10px; }
+.time-buttons button {
+  flex: 1;
+  padding: 16px;
+  min-height: 50px;
+  font-size: 18px;
+  font-weight: 700;
+  border-radius: 10px;
+  border: none;
+  background: #e9ecef;
+  cursor: pointer;
+}
+.active { background: #007bff !important; color: white; }
+.disabled { opacity: 0.4; pointer-events: none; }
+
+#submitBtn {
+  width: 100%;
+  padding: 18px;
+  margin-top: 30px;
+  font-size: 19px;
+  font-weight: 800;
+  border-radius: 12px;
+  border: none;
+  background: #c9c9c9;
+  color: white;
+  cursor: pointer;
+  min-height: 56px;
+}
+
+.hidden { display: none; }
+.complete { text-align: center; padding: 40px 10px; word-break: break-word; }
+#agreeCheck { width: 26px; height: 26px; -webkit-appearance: checkbox; }
+
+button:disabled { background: #bfc4c9; cursor: not-allowed; }
+.locked { background: #6c757d !important; }
+
+@media(max-width:600px){
+  .container { width: 95%; max-width: 100%; margin-top: -20px; border-radius: 12px; }
+}
 </style>
 </head>
 <body>
 <div class="hero">
-<h1>Medical Smart Order</h1>
-<h2>北田内科クリニック</h2>
+  <h1>Medical Smart Order</h1>
+  <h2>北田内科クリニック</h2>
 </div>
+
 <div class="container">
-<div id="loginArea">
-<label>パスワード</label>
-<input type="password" id="password">
-<button id="loginBtn" onclick="login()" style="margin-top:15px;padding:16px;width:100%;font-size:18px;font-weight:700;border-radius:10px;border:none;background:#c9c9c9;color:white;min-height:50px;" disabled>ログイン</button>
-</div>
-<div id="formArea" class="hidden">
-<form id="reservationForm">
+  <!-- ログインエリア -->
+  <div id="loginArea">
+    <label>パスワード</label>
+    <input type="password" id="password">
+    <button id="loginBtn" onclick="login()" style="margin-top:15px;padding:16px;width:100%;font-size:18px;font-weight:700;border-radius:10px;border:none;background:#c9c9c9;color:white;min-height:50px;" disabled>ログイン</button>
+  </div>
 
-<label>紹介コード（例：a123）</label><input type="text" id="referralCode" required>
+  <!-- フォームエリア -->
+  <div id="formArea" class="hidden">
+    <form id="reservationForm">
+      <label>紹介コード（例：a123）</label><input type="text" id="referralCode" required>
+      <label>姓</label><input type="text" id="lastName" required>
+      <label>名</label><input type="text" id="firstName" required>
+      <label>セイ</label><input type="text" id="lastKana" required>
+      <label>メイ</label><input type="text" id="firstKana" required>
+      <label>生年月日（18歳未満：購入不可）</label><input type="date" id="birthDate" required>
+      <label>住所（例：岐阜市神田町１－１）</label><input type="text" id="address" required>
+      <label>電話番号（例：09012345678）</label><input type="tel" id="phone" required>
+      <label>メールアドレス（確認メール受信用）</label><input type="email" id="email" required>
+      <label>初回購入</label>
+      <select id="firstPurchase" required>
+        <option value="">選択してください</option>
+        <option value="true">はい</option>
+        <option value="false">いいえ</option>
+      </select>
+      <label>セット数（2.5mg）※初診料含みます</label><select id="setCount"></select>
+      <label>受取日（本日から4営業日以降）</label><input type="date" id="reservationDate" required>
+      <label>時間帯（診療時間内）</label>
+      <div class="time-buttons">
+        <button type="button" id="morningBtn">午前</button>
+        <button type="button" id="afternoonBtn">午後</button>
+      </div>
 
-<label>姓</label><input type="text" id="lastName" required>
-<label>名</label><input type="text" id="firstName" required>
-<label>セイ</label><input type="text" id="lastKana" required>
-<label>メイ</label><input type="text" id="firstKana" required>
-<label>生年月日（18歳未満：購入不可）</label><input type="date" id="birthDate" required>
-<label>住所（例：岐阜市神田町１－１）</label><input type="text" id="address" required>
-<label>電話番号（例：09012345678）</label><input type="tel" id="phone" required>
-<label>メールアドレス（確認メール受信用）</label><input type="email" id="email" required>
-<label>初回購入</label>
-<select id="firstPurchase" required>
-<option value="">選択してください</option>
-<option value="true">はい</option>
-<option value="false">いいえ</option>
-</select>
-<label>セット数（2.5mg）※初診料含みます</label><select id="setCount"></select>
-<label>受取日（本日から4営業日以降）</label><input type="date" id="reservationDate" required>
-<label>時間帯（診療時間内）</label>
-<div class="time-buttons">
-<button type="button" id="morningBtn">午前</button>
-<button type="button" id="afternoonBtn">午後</button>
-</div>
+      <div id="importantNotice" style="margin-top:22px;font-size:17px;line-height:1.7;">
+        ◆ マンジャロ処方前の重要確認<br>
+        〖 慎重な判断が必要な方 〗<br>
+        膵炎、甲状腺疾患（家族歴含む）、腎・肝機能障害、重度の低血糖、GLP-1薬の副作用歴、激しい胃腸障害がある方、および糖尿病薬を使用中の方。<br> 
+        〖 重 要 事 項 〗<br> 
+        • 登録は購入確定ではなく、医師の対面診察が必須です。<br> 
+        • 医学的判断により処方不可となる場合があります。<br> 
+        • 自己判断での使用・増量は重大な健康被害を招くため厳禁です。専門医の管理のもと、安全に使用してください。
+      </div>
 
-<div id="importantNotice" style="margin-top:22px;font-size:17px;line-height:1.7;">
-◆ マンジャロ処方前の重要確認<br>
-〖 慎重な判断が必要な方 〗<br>
-膵炎、甲状腺疾患（家族歴含む）、腎・肝機能障害、重度の低血糖、GLP-1薬の副作用歴、激しい胃腸障害がある方、および糖尿病薬を使用中の方。<br> 
-〖 重 要 事 項 〗<br> 
-• 登録は購入確定ではなく、医師の対面診察が必須です。<br> 
-• 医学的判断により処方不可となる場合があります。<br> 
-• 自己判断での使用・増量は重大な健康被害を招くため厳禁です。専門医の管理のもと、安全に使用してください。
-</div>
+      <div style="margin-top:15px;display:flex;align-items:center;gap:10px;">
+        <input type="checkbox" id="agreeCheck">
+        <label for="agreeCheck" style="margin:0;font-size:18px;font-weight:700;">上記内容を確認・同意しました</label>
+      </div>
 
-<div style="margin-top:15px;display:flex;align-items:center;gap:10px;">
-<input type="checkbox" id="agreeCheck">
-<label for="agreeCheck" style="margin:0;font-size:18px;font-weight:700;">上記内容を確認・同意しました</label>
-</div>
+      <!-- バリデーションガイド表示用 -->
+      <div id="validationMessage" style="color: #dc3545; font-size: 15px; font-weight: 700; margin-top: 15px; text-align: center; min-height: 24px;"></div>
 
-<!-- ガイドメッセージ表示エリア -->
-<div id="validationMessage" style="color: #dc3545; font-size: 15px; font-weight: 700; margin-top: 15px; text-align: center; min-height: 24px;"></div>
+      <button type="submit" id="submitBtn" disabled>予約する</button>
+    </form>
+  </div>
 
-<button type="submit" id="submitBtn" style="background:#c9c9c9;" disabled>予約する</button>
-</form>
-</div>
-<div id="completeArea" class="complete hidden"></div>
+  <div id="completeArea" class="complete hidden"></div>
 </div>
 
 <script>
 const GAS_URL="https://script.google.com/macros/s/AKfycbyZAVbcHORZuuavQsm9rkoARndvwtXX-hUQqUK5vIUJNB3oKg7vv9xE13bEw4RCKo05/exec";
 let holidays=[];
-let minDate="";
+let minDateStr="";
 let selectedTime="";
 
-// --- パスワード入力監視（ログインボタン不具合修正） ---
+// --- パスワード監視（ログインボタン色変更） ---
 password.addEventListener("input", function(){
   if(this.value.trim() !== ""){
     loginBtn.disabled = false;
@@ -157,13 +225,18 @@ function login(){
   });
 }
 
-function initData(){
+// ページ読み込み完了時に即座にカレンダー制限（min属性）をセット
+// ログイン後ではなくここで実行することで、Chrome等のブラウザでも確実にカレンダーを制限する
+window.onload = function() {
   post("getInitialCalendarData",{}).then(data=>{
-    holidays=data.holidays;
-    minDate=data.minDate;
-    reservationDate.setAttribute("min",minDate);
-    reservationDate.min = minDate;
+    holidays = data.holidays;
+    minDateStr = data.minDate;
+    reservationDate.min = minDateStr;
   });
+};
+
+function initData(){
+  // セット数オプションの取得
   post("getSetOptions",{}).then(list=>{
     setCount.innerHTML="";
     list.forEach(function(opt){
@@ -175,80 +248,72 @@ function initData(){
   });
 }
 
-// --- バリデーション：生年月日（最強対策・二段構え） ---
+// --- 18歳未満制限バリデーション（最強対策版） ---
 function validateAge(inputElement) {
   if(!inputElement.value) return true;
-  const today=new Date();
-  const birth=new Date(inputElement.value.replace(/-/g, "/"));
+  const today = new Date();
+  const birth = new Date(inputElement.value.replace(/-/g, "/"));
   if(isNaN(birth.getTime())) return true;
-  if(birth > today || birth.getFullYear() < 1900) return true;
+  
+  let age = today.getFullYear() - birth.getFullYear();
+  const m = today.getMonth() - birth.getMonth();
+  if(m < 0 || (m === 0 && today.getDate() < birth.getDate())){ age--; }
 
-  let age=today.getFullYear()-birth.getFullYear();
-  const m=today.getMonth()-birth.getMonth();
-  if(m<0 || (m===0 && today.getDate()<birth.getDate())){ age--; }
-
-  if(age<18){
+  if(age < 18){
     alert("18歳未満は申し込みできません");
-    inputElement.value="";
+    inputElement.value = "";
     return false;
   }
   return true;
 }
 
-// iPhoneでの干渉を防ぐため、blur時ではなくchange時のみ（確定後）にチェック
-birthDate.addEventListener("change", function(){
-  validateAge(this);
-  checkFormComplete();
-});
-
-// --- バリデーション：受取日（iPhoneカレンダー即閉じ対策） ---
+// --- 日付制限バリデーション（4営業日、日曜、祝日） ---
 function validateReservationDate(inputElement) {
-  if(!inputElement.value) return true;
   const val = inputElement.value;
-  const d=new Date(val.replace(/-/g, "/"));
-  const day=d.getDay();
+  if(!val) return true;
+  const d = new Date(val.replace(/-/g, "/"));
+  const day = d.getDay();
 
-  if(val < minDate){
+  if(val < minDateStr){
     alert("4営業日以降の日付を選択してください");
-    inputElement.value="";
+    inputElement.value = "";
     return false;
   }
-  if(day===0){
+  if(day === 0){
     alert("日曜日は選択できません");
-    inputElement.value="";
+    inputElement.value = "";
     return false;
   }
   if(holidays.includes(val)){
     alert("祝日は選択できません");
-    inputElement.value="";
+    inputElement.value = "";
     return false;
   }
   return true;
 }
 
-// iPhone対策：入力中にDOMを激しく動かさないよう整理
-reservationDate.addEventListener("change", function(){
-  const self = this;
-  // わずかに遅延させることでiOSのピッカー動作を優先
-  setTimeout(function(){
-    if(!validateReservationDate(self)) {
-      self.classList.add("invalid-date");
-      checkFormComplete();
-      return;
-    }
-    self.classList.remove("invalid-date");
-    const d=new Date(self.value.replace(/-/g, "/"));
-    if(d.getDay()===3 || d.getDay()===6){
-      afternoonBtn.classList.add("disabled");
-      if(selectedTime === "午後"){
-        selectedTime = "";
-        afternoonBtn.classList.remove("active");
+// --- iPhone Safari 対策（changeイベントに集約し、DOM操作を遅延させてピッカーの即閉じを防止） ---
+[birthDate, reservationDate].forEach(el => {
+  el.addEventListener("change", function(){
+    const target = this;
+    // iOS標準ピッカーの動作完了を優先させるため200ms待機
+    setTimeout(() => {
+      if(target.id === "birthDate") validateAge(target);
+      if(target.id === "reservationDate") {
+        if(validateReservationDate(target)){
+          const d = new Date(target.value.replace(/-/g, "/"));
+          // 水・土の午後ボタン無効化処理
+          if(d.getDay() === 3 || d.getDay() === 6){
+            afternoonBtn.classList.add("disabled");
+            if(selectedTime === "午後"){ selectedTime = ""; afternoonBtn.classList.remove("active"); }
+          } else {
+            afternoonBtn.classList.remove("disabled");
+          }
+        }
       }
-    }else{
-      afternoonBtn.classList.remove("disabled");
-    }
-    checkFormComplete();
-  }, 100);
+      checkFormComplete();
+    }, 200);
+  });
 });
 
 morningBtn.onclick=function(){
@@ -269,55 +334,45 @@ afternoonBtn.onclick=function(){
   checkFormComplete();
 };
 
-// --- フォーム全体の入力完了チェック（ガイドメッセージ付き） ---
+// 予約ボタン活性化チェック
 function checkFormComplete(){
-  let message = "";
-  if(!referralCode.value){ message = "※紹介コードを入力してください"; }
-  else if(!lastName.value || !firstName.value || !lastKana.value || !firstKana.value){ message = "※お名前（漢字・カナ）を入力してください"; }
-  else if(!birthDate.value){ message = "※生年月日を入力してください"; }
-  else if(!address.value){ message = "※住所を入力してください"; }
-  else if(!phone.value){ message = "※電話番号を入力してください"; }
-  else if(!email.value){ message = "※メールアドレスを入力してください"; }
-  else if(!firstPurchase.value){ message = "※初回購入の有無を選択してください"; }
-  else if(!setCount.value){ message = "※セット数を選択してください"; }
-  else if(!reservationDate.value){ message = "※受取日を選択してください"; }
-  else if(!selectedTime){ message = "※時間帯（午前・午後）を選択してください"; }
-  else if(!agreeCheck.checked){ message = "※重要事項への同意チェックが必要です"; }
-
   const isValid = (referralCode.value && lastName.value && firstName.value && lastKana.value &&
     firstKana.value && birthDate.value && address.value && phone.value &&
     email.value && firstPurchase.value && setCount.value && reservationDate.value &&
     selectedTime && agreeCheck.checked);
 
-  if(isValid){
-    submitBtn.disabled=false;
-    submitBtn.style.background="#007bff";
-    validationMessage.textContent = "";
+  let message = "";
+  if(!isValid){
+    if(!referralCode.value) message = "※紹介コードを入力してください";
+    else if(!lastName.value) message = "※お名前（姓名・漢字）を入力してください";
+    else if(!lastKana.value) message = "※お名前（セイメイ・カナ）を入力してください";
+    else if(!birthDate.value) message = "※生年月日を入力してください";
+    else if(!reservationDate.value) message = "※受取日を選択してください";
+    else if(!selectedTime) message = "※時間帯を選択してください";
+    else if(!agreeCheck.checked) message = "※同意チェックが必要です";
+    
+    submitBtn.disabled = true;
+    submitBtn.style.background = "#c9c9c9";
   } else {
-    submitBtn.disabled=true;
-    submitBtn.style.background="#c9c9c9";
-    validationMessage.textContent = message;
+    submitBtn.disabled = false;
+    submitBtn.style.background = "#007bff";
   }
+  validationMessage.textContent = message;
 }
 
-// 全ての必須入力に監視イベントを登録
+// 全入力監視
 [referralCode,lastName,firstName,lastKana,firstKana,birthDate,address,phone,email,firstPurchase,setCount,reservationDate,agreeCheck].forEach(el=>{
-  el.addEventListener("change",checkFormComplete);
-  el.addEventListener("input",checkFormComplete);
+  el.addEventListener("input", checkFormComplete);
+  el.addEventListener("change", checkFormComplete);
 });
 
 // --- 送信処理（二段構え最終バリデーション） ---
 reservationForm.addEventListener("submit",function(e){
   e.preventDefault();
-
-  // 送信直前の最終チェック（すり抜け防止）
+  
+  // 送信直前の最終チェック
   if(!validateAge(birthDate)) return;
   if(!validateReservationDate(reservationDate)) return;
-  
-  if(!selectedTime || !agreeCheck.checked) {
-    checkFormComplete();
-    return;
-  }
 
   submitBtn.disabled=true;
   submitBtn.classList.add("locked");
@@ -343,7 +398,7 @@ reservationForm.addEventListener("submit",function(e){
     if(res.status==="success"){
       formArea.classList.add("hidden");
       completeArea.classList.remove("hidden");
-      completeArea.innerHTML="<h3>予約が完了しました</h3><h5>★本画面のスクショを推奨★</h5><p>【 予約番号 】："+res.reservationNumber+"</p><p>予約内容確認メールをご指定のメールアドレスに送信致しました。（送信元：kitada.medical.clinic@gmail.com）<br>当日は確認メール、もしくは本画面に記載された【 予約番号 】を窓口でお知らせください</p><p>北田内科クリニック</p><button onclick=\"window.location.href='https://www.kitadaclinic.com/'\" style=\"margin-top:20px;padding:16px;width:100%;font-size:18px;font-weight:700;border-radius:10px;border:none;background:#007bff;color:white;min-height:50px;\">北田内科クリニック公式ホームページへ</button>";
+      completeArea.innerHTML="<h3>予約が完了しました</h3><h5>★本画面のスクショを推奨★</h5><p>【 予約番号 】："+res.reservationNumber+"</p><p>予約内容確認メールをご指定のメールアドレスに送信致しました。</p><p>北田内科クリニック</p><button onclick=\"window.location.href='https://www.kitadaclinic.com/'\" style=\"margin-top:20px;padding:16px;width:100%;font-size:18px;font-weight:700;border-radius:10px;border:none;background:#007bff;color:white;min-height:50px;\">北田内科クリニック公式ホームページへ</button>";
     }else{
       alert(res.message);
       submitBtn.disabled=false;
