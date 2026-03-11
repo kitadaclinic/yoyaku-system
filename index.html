@@ -16,17 +16,17 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="北田予約">
   
-  <!-- Galaxy/Androidのアイコン背景やバーの色を濃い蒼に指定（白枠対策） -->
+  <!-- 【Galaxy/Android対応】システムに濃い蒼を通知（白枠対策） -->
   <meta name="theme-color" content="#001f3f"> 
   
-  <!-- iOS用アイコン：加工を抑制し枠いっぱいに表示しやすくする -->
+  <!-- iOS用：加工抑制 -->
   <link rel="apple-touch-icon-precomposed" href="ktd-icon1.png">
-  <!-- Android/汎用アイコン設定 -->
+  <!-- 【Android対応】汎用アイコン指定 -->
   <link rel="icon" type="image/png" href="ktd-icon1.png">
 
   <title>北田内科クリニック 予約システム</title>
 <style>
-/* iPhoneでの幅突き抜けを物理的に防止 */
+/* iPhone/Android共通 幅突き抜け防止 */
 *, *::before, *::after {
   box-sizing: border-box;
 }
@@ -39,7 +39,7 @@ html, body {
   overflow-y: auto;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   
-  /* 背景を濃い蒼のグラデーションに設定（アイコンやロゴの周囲と馴染ませる） */
+  /* 【修正箇所】背景を濃い蒼のグラデーションに（アイコンの白枠対策） */
   background: linear-gradient(135deg, #001f3f 0%, #003366 100%);
   
   font-size: 18px;
@@ -311,7 +311,7 @@ function updateDateGuide(isError) {
   }
 }
 
-// 予約ボタンの状態とエラーメッセージを同期させる一括判定ロジック
+// ボタンとエラー表示の一括判定ロジック（完全維持）
 function checkFormComplete(){
   const dateVal = reservationDate.value;
   const isDateFilled = !!dateVal;
@@ -326,7 +326,6 @@ function checkFormComplete(){
     isDateLogicalError = true;
   }
 
-  // 全ての条件がクリアされている場合のみボタンを活性化
   if(isBasicFilled && isDateFilled && !isDateLogicalError && isTimeFilled && isAgreed){
     submitBtn.disabled = false;
     submitBtn.style.background = "#007bff";
@@ -335,7 +334,6 @@ function checkFormComplete(){
     return;
   }
 
-  // 条件未達時はボタンをグレーにし、原因を表示
   submitBtn.disabled = true;
   submitBtn.style.background = "#c9c9c9";
 
