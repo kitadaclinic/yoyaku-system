@@ -5,23 +5,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
   
-  <!-- LINE・メール配布用のプレビュー設定 (OGP) -->
   <meta property="og:title" content="北田内科クリニック 予約システム">
   <meta property="og:description" content="オンラインで受取予約が可能です。">
   <meta property="og:image" content="ktd-icon1.png">
   <meta property="og:type" content="website">
   
-  <!-- ホーム画面用アイコン設定 (iPhone & Android/Galaxy) -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="北田予約">
   
-  <!-- 【Galaxy/Android対応】システムに濃い蒼を通知（白枠対策） -->
   <meta name="theme-color" content="#001f3f"> 
   
-  <!-- iOS用：加工抑制 -->
   <link rel="apple-touch-icon-precomposed" href="ktd-icon1.png">
-  <!-- 【Android対応】汎用アイコン指定 -->
   <link rel="icon" type="image/png" href="ktd-icon1.png">
 
   <title>北田内科クリニック 予約システム</title>
@@ -39,7 +34,7 @@ html, body {
   overflow-y: auto;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   
-  /* 【修正箇所】背景を濃い蒼のグラデーションに（アイコンの白枠対策） */
+  /* 背景を濃い蒼のグラデーションに（アイコンの白枠対策） */
   background: linear-gradient(135deg, #001f3f 0%, #003366 100%);
   
   font-size: 18px;
@@ -311,7 +306,6 @@ function updateDateGuide(isError) {
   }
 }
 
-// ボタンとエラー表示の一括判定ロジック（完全維持）
 function checkFormComplete(){
   const dateVal = reservationDate.value;
   const isDateFilled = !!dateVal;
@@ -321,12 +315,21 @@ function checkFormComplete(){
                         firstKana.value && birthDate.value && address.value && phone.value && 
                         email.value && firstPurchase.value && setCount.value);
 
+  // --- 【修正：日曜日・祝日判定】 ---
+  let isHolidayOrSunday = false;
+  if (dateVal) {
+    const d = new Date(dateVal.replace(/-/g, "/"));
+    if (d.getDay() === 0 || holidays.includes(dateVal)) {
+      isHolidayOrSunday = true;
+    }
+  }
+
   let isDateLogicalError = false;
   if(dateVal && minDateStr && dateVal < minDateStr){
     isDateLogicalError = true;
   }
 
-  if(isBasicFilled && isDateFilled && !isDateLogicalError && isTimeFilled && isAgreed){
+  if(isBasicFilled && isDateFilled && !isDateLogicalError && !isHolidayOrSunday && isTimeFilled && isAgreed){
     submitBtn.disabled = false;
     submitBtn.style.background = "#007bff";
     validationMessage.textContent = "";
@@ -339,9 +342,9 @@ function checkFormComplete(){
 
   if(!isBasicFilled){
     validationMessage.textContent = "※未入力の項目があります";
-  } else if(!isDateFilled || isDateLogicalError){
-    validationMessage.textContent = "※受取日を正しく選択してください";
-    if(isDateLogicalError) updateDateGuide(true);
+  } else if(!isDateFilled || isDateLogicalError || isHolidayOrSunday){
+    validationMessage.textContent = isHolidayOrSunday ? "※日曜日・祝日は休診日です" : "※受取日を正しく選択してください";
+    if(isDateLogicalError || isHolidayOrSunday) updateDateGuide(true);
   } else if(!isTimeFilled){
     validationMessage.textContent = "※時間帯を選択してください";
   } else if(!isAgreed){
@@ -351,14 +354,10 @@ function checkFormComplete(){
 
 reservationDate.addEventListener("change", function(){
   const val = this.value;
-  if(val && minDateStr && val < minDateStr){
-    this.value = "";
-    updateDateGuide(true);
-  } else {
-    updateDateGuide(false);
-  }
+  if(!val) return;
 
   const d = new Date(val.replace(/-/g, "/"));
+  // 水(3)・土(6) の午後は無効化
   if(d.getDay() === 3 || d.getDay() === 6){
     afternoonBtn.classList.add("disabled");
     if(selectedTime === "午後"){
