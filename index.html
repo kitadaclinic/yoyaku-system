@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
   
   <meta property="og:title" content="北田内科クリニック 予約システム">
-  <meta property="og:description" content="オンラインで受取予約が可能です.">
+  <meta property="og:description" content="オンラインで受取予約が可能です。">
   <meta property="og:image" content="ktd-icon1.png">
   <meta property="og:type" content="website">
   
@@ -34,7 +34,7 @@ html, body {
   overflow-y: auto;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   
-  /* 【修正箇所】背景を濃い蒼のグラデーションに（アイコンの白枠対策） */
+  /* 背景を濃い蒼のグラデーションに（アイコンの白枠対策） */
   background: linear-gradient(135deg, #001f3f 0%, #003366 100%);
   
   font-size: 18px;
@@ -326,7 +326,7 @@ function checkFormComplete(){
 
   const isDateLogicalError = (dateVal && minDateStr && dateVal < minDateStr);
 
-  // 1. 全て正常な場合
+  // 全て正常な場合
   if(isBasicFilled && isDateFilled && !isDateLogicalError && !isHolidayOrSunday && isTimeFilled && isAgreed){
     submitBtn.disabled = false;
     submitBtn.style.background = "#007bff";
@@ -335,7 +335,7 @@ function checkFormComplete(){
     return;
   }
 
-  // 2. NGがある場合
+  // エラーがある場合のボタン無効化
   submitBtn.disabled = true;
   submitBtn.style.background = "#c9c9c9";
 
@@ -346,11 +346,11 @@ function checkFormComplete(){
     validationMessage.textContent = "※受取日を選択してください";
     updateDateGuide(false);
   } else if(isHolidayOrSunday){
-    // 日曜・祝日の警告を最優先にする
+    // 日曜・祝日の際はメッセージを優先し、ガイドの赤文字は解除
     validationMessage.textContent = "※日曜日・祝日は休診日です";
-    updateDateGuide(true);
+    updateDateGuide(false);
   } else if(isDateLogicalError){
-    // 最短日制限の警告
+    // 最短日制限の時のみ、ガイドを赤文字にして強調
     validationMessage.textContent = "※受取日を正しく選択してください";
     updateDateGuide(true);
   } else if(!isTimeFilled){
