@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>予約購入管理システム</title>
+  <title>商品受け取り予約システム</title>
   <style>
     :root {
       --primary-color: #001f3f;
@@ -159,7 +159,7 @@
 
       <div class="form-group">
         <label for="address">住所</label>
-        <input type="text" id="address" placeholder="岐阜県羽島郡岐南町..." required>
+        <input type="text" id="address" placeholder="住所を入力してください" required>
       </div>
 
       <div class="form-group">
@@ -236,13 +236,11 @@
   </div>
 
   <script>
-    const GAS_ENDPOINT = "YOUR_GAS_WEB_APP_URL"; // デプロイ後に差し替え
-
     function checkFormComplete(){
+      const timeSelected = document.querySelector('input[name="timeSlot"]:checked');
       const isBasicFilled = lastName.value && firstName.value && lastKana.value && firstKana.value && 
                             birthDate.value && address.value && phone.value && email.value && 
-                            firstPurchase.value && setCount.value && reservationDate.value && 
-                            document.querySelector('input[name="timeSlot"]:checked');
+                            firstPurchase.value && setCount.value && reservationDate.value && timeSelected;
       
       const isAgreed = agreeCheck.checked;
       submitBtn.disabled = !(isBasicFilled && isAgreed);
@@ -266,7 +264,6 @@
     reservationForm.addEventListener("submit", function(e){
       e.preventDefault();
       const selectedTime = document.querySelector('input[name="timeSlot"]:checked').value;
-      
       const data = {
         referralCode: referralCode.value,
         lastName: lastName.value,
@@ -281,7 +278,7 @@
         setCount: setCount.value,
         reservationDate: reservationDate.value,
         time: selectedTime,
-        cashPreferred: cashPreferred.checked // 追加
+        cashPreferred: cashPreferred.checked
       };
 
       loadingOverlay.style.display = "flex";
@@ -297,10 +294,9 @@
     });
 
     [referralCode,lastName,firstName,lastKana,firstKana,address,phone,email,firstPurchase,setCount,agreeCheck,birthDate,cashPreferred].forEach(el=>{
-      const eventType = (el.tagName === "INPUT" && (el.type === "text" || el.type === "tel" || el.type === "email" || el.type === "password")) ? "input" : "change";
+      const eventType = (el.tagName === "INPUT" && el.type !== "checkbox") ? "input" : "change";
       el.addEventListener(eventType, checkFormComplete);
     });
-    
     document.getElementsByName("timeSlot").forEach(el => el.addEventListener("change", checkFormComplete));
   </script>
 </body>
