@@ -1,193 +1,210 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
-  <base target="_top">
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
-  
-  <meta property="og:title" content="北田内科クリニック 予約システム">
-  <meta property="og:description" content="オンラインで受取予約が可能です。">
-  <meta property="og:image" content="ktd-icon1.png">
-  <meta property="og:type" content="website">
-  
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="北田予約">
-  
-  <meta name="theme-color" content="#001f3f"> 
-  
-  <link rel="apple-touch-icon-precomposed" href="ktd-icon1.png">
-  <link rel="icon" type="image/png" href="ktd-icon1.png">
-
-  <title>北田内科クリニック 予約システム</title>
-<style>
-/* iPhone/Android共通 幅突き抜け防止 */
-*, *::before, *::after {
-  box-sizing: border-box;
-}
-
-html, body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  overflow-x: hidden;
-  overflow-y: auto;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  
-  /* 背景を濃い蒼のグラデーションに（アイコンの白枠対策） */
-  background: linear-gradient(135deg, #001f3f 0%, #003366 100%);
-  
-  font-size: 18px;
-  -webkit-text-size-adjust: 100%;
-  touch-action: pan-y;
-
-  /* 背景ロゴの設定 */
-  background-image: url("自由診療ロゴ.png");
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: top center;
-  background-attachment: fixed;
-}
-
-@media (min-width: 769px) {
-  html, body {
-    background-size: 20% 190px;
-  }
-}
-
-.hero {
-  height: 230px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  color: white;
-  text-align: center;
-  padding: 0 10px;
-}
-.hero h1 { margin: 0; font-size: 28px; font-weight: 800; }
-.hero h2 { margin-top: 8px; font-size: 20px; font-weight: 700; }
-
-.container {
-  max-width: 420px;
-  width: 94%;
-  margin: -35px auto 40px auto;
-  background: white;
-  border-radius: 14px;
-  padding: 25px 20px 35px 20px;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.25);
-}
-
-label { display: block; margin-top: 20px; font-size: 18px; font-weight: 700; }
-
-input, select {
-  width: 100%;
-  padding: 16px;
-  margin-top: 8px;
-  font-size: 18px;
-  font-weight: 600;
-  border-radius: 10px;
-  border: 1.5px solid #bbb;
-  background: white;
-  display: block;
-  -webkit-appearance: none;
-}
-
-#dateGuide {
-  margin-top: 6px;
-  font-size: 15px;
-  font-weight: 700;
-  min-height: 20px;
-  color: #555;
-}
-.error-text { color: #dc3545 !important; animation: shake 0.3s; }
-@keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-4px); }
-  75% { transform: translateX(4px); }
-}
-
-.time-buttons { display: flex; gap: 10px; margin-top: 10px; }
-.time-buttons button {
-  flex: 1;
-  padding: 16px;
-  min-height: 50px;
-  font-size: 18px;
-  font-weight: 700;
-  border-radius: 10px;
-  border: none;
-  background: #e9ecef;
-  cursor: pointer;
-}
-.active { background: #007bff !important; color: white; }
-.disabled { opacity: 0.3; pointer-events: none; background: #ddd !important; }
-
-#submitBtn {
-  width: 100%;
-  padding: 18px;
-  margin-top: 30px;
-  font-size: 19px;
-  font-weight: 800;
-  border-radius: 12px;
-  border: none;
-  background: #c9c9c9;
-  color: white;
-  cursor: pointer;
-  min-height: 56px;
-}
-
-.hidden { display: none; }
-.complete { text-align: center; padding: 40px 10px; word-break: break-word; overflow-wrap: break-word; }
-#agreeCheck { width: 26px; height: 26px; -webkit-appearance: checkbox; }
-
-button:disabled { background: #bfc4c9; cursor: not-allowed; }
-.locked { background: #6c757d !important; }
-
-@media(max-width:600px){
-  .container { width: 95%; max-width: 100%; margin-top: -20px; border-radius: 12px; padding: 22px 16px 30px 16px; }
-}
-</style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>予約購入管理システム</title>
+  <style>
+    :root {
+      --primary-color: #001f3f;
+      --secondary-color: #f8f9fa;
+      --accent-color: #007bff;
+      --text-color: #333;
+    }
+    body {
+      font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, sans-serif;
+      background-color: #e9ecef;
+      margin: 0;
+      padding: 0;
+      color: var(--text-color);
+      line-height: 1.6;
+    }
+    .container {
+      max-width: 600px;
+      margin: 20px auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    }
+    .hero-image {
+      width: 100%;
+      height: auto;
+      border-radius: 10px;
+      margin-bottom: 25px;
+      object-fit: cover;
+    }
+    h1 {
+      text-align: center;
+      color: var(--primary-color);
+      font-size: 26px;
+      margin-bottom: 25px;
+      border-bottom: 2px solid var(--primary-color);
+      padding-bottom: 10px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 700;
+      color: var(--primary-color);
+    }
+    input[type="text"], input[type="tel"], input[type="email"], input[type="date"], input[type="password"], select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ced4da;
+      border-radius: 8px;
+      box-sizing: border-box;
+      font-size: 16px;
+      transition: border-color 0.3s;
+    }
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--accent-color);
+      box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+    }
+    .btn {
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 8px;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 10px;
+    }
+    .btn-primary {
+      background-color: var(--primary-color);
+      color: #fff;
+    }
+    .btn-primary:disabled {
+      background-color: #6c757d;
+      cursor: not-allowed;
+    }
+    #loadingOverlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(255,255,255,0.8);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    .spinner {
+      width: 50px; height: 50px;
+      border: 5px solid #f3f3f3;
+      border-top: 5px solid var(--primary-color);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+  </style>
 </head>
 <body>
-<div class="hero">
-  <h1>Medical Smart Order</h1>
-  <h2>北田内科クリニック</h2>
-</div>
 
-<div class="container">
-  <div id="loginArea">
-    <label>パスワード</label>
-    <input type="password" id="password">
-    <button id="loginBtn" onclick="login()" style="margin-top:15px;padding:16px;width:100%;font-size:18px;font-weight:700;border-radius:10px;border:none;background:#c9c9c9;color:white;min-height:50px;" disabled>ログイン</button>
+  <div id="loadingOverlay">
+    <div class="spinner"></div>
+    <p style="margin-top:15px; font-weight:bold;">処理中...</p>
   </div>
 
-  <div id="formArea" class="hidden">
-    <form id="reservationForm">
-      <label>紹介コード（例：a123）</label><input type="text" id="referralCode" required>
-      <label>姓</label><input type="text" id="lastName" required>
-      <label>名</label><input type="text" id="firstName" required>
-      <label>セイ</label><input type="text" id="lastKana" required>
-      <label>メイ</label><input type="text" id="firstKana" required>
-      <label>生年月日（18歳未満：購入不可）</label><input type="date" id="birthDate" required>
-      <label>住所（例：岐阜市神田町１－１）</label><input type="text" id="address" required>
-      <label>電話番号（例：09012345678）</label><input type="tel" id="phone" required>
-      <label>メールアドレス（確認メール受信用）</label><input type="email" id="email" required>
-      <label>初回購入</label>
-      <select id="firstPurchase" required>
-        <option value="">選択してください</option>
-        <option value="true">はい</option>
-        <option value="false">いいえ</option>
-      </select>
-      <label>セット数（2.5mg）※初診料含みます</label><select id="setCount"></select>
-      
-      <label>受取日（本日から4営業日以降）</label>
-      <input type="date" id="reservationDate" required>
-      <div id="dateGuide"></div>
+  <div class="container" id="authSection">
+    <h1>システムログイン</h1>
+    <div class="form-group">
+      <label for="systemPassword">認証パスワード</label>
+      <input type="password" id="systemPassword" placeholder="パスワードを入力してください">
+    </div>
+    <button id="authBtn" class="btn btn-primary">認証</button>
+  </div>
 
-      <label>時間帯（診療時間内）</label>
-      <div class="time-buttons">
-        <button type="button" id="morningBtn">午前</button>
-        <button type="button" id="afternoonBtn">午後</button>
+  <div class="container" id="mainSection" style="display:none;">
+    <img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=800&q=80" alt="Clinic Hero" class="hero-image">
+    <h1>予約・購入申込フォーム</h1>
+    
+    <form id="reservationForm">
+      <div class="form-group">
+        <label for="referralCode">紹介者コード（任意）</label>
+        <input type="text" id="referralCode">
+      </div>
+
+      <div style="display:flex; gap:10px;">
+        <div class="form-group" style="flex:1;">
+          <label for="lastName">姓</label>
+          <input type="text" id="lastName" placeholder="山田" required>
+        </div>
+        <div class="form-group" style="flex:1;">
+          <label for="firstName">名</label>
+          <input type="text" id="firstName" placeholder="太郎" required>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:10px;">
+        <div class="form-group" style="flex:1;">
+          <label for="lastKana">セイ（カタカナ）</label>
+          <input type="text" id="lastKana" placeholder="ヤマダ" required>
+        </div>
+        <div class="form-group" style="flex:1;">
+          <label for="firstKana">メイ（カタカナ）</label>
+          <input type="text" id="firstKana" placeholder="タロウ" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="birthDate">生年月日</label>
+        <input type="date" id="birthDate" required>
+      </div>
+
+      <div class="form-group">
+        <label for="address">住所</label>
+        <input type="text" id="address" placeholder="岐阜県羽島郡岐南町..." required>
+      </div>
+
+      <div class="form-group">
+        <label for="phone">電話番号</label>
+        <input type="tel" id="phone" placeholder="09012345678" required>
+      </div>
+
+      <div class="form-group">
+        <label for="email">メールアドレス</label>
+        <input type="email" id="email" placeholder="example@mail.com" required>
+      </div>
+
+      <div class="form-group">
+        <label for="firstPurchase">当院でのマンジャロ購入は初めてですか？</label>
+        <select id="firstPurchase" required>
+          <option value="">選択してください</option>
+          <option value="true">はい（初回購入）</option>
+          <option value="false">いいえ（再購入）</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="setCount">購入希望セット数（1セット＝2箱/4週分）</label>
+        <select id="setCount" required>
+          <option value="">セット数を選択</option>
+          <option value="1">1セット</option>
+          <option value="2">2セット</option>
+          <option value="3">3セット</option>
+          <option value="4">4セット</option>
+          <option value="5">5セット</option>
+          <option value="6">6セット</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="reservationDate">受取希望日</label>
+        <input type="date" id="reservationDate" required>
+      </div>
+
+      <div class="form-group">
+        <label>受取時間帯</label>
+        <div style="display:flex; gap:20px; margin-top:5px;">
+          <label style="font-weight:normal;"><input type="radio" name="timeSlot" value="午前" required> 午前</label>
+          <label style="font-weight:normal;"><input type="radio" name="timeSlot" value="午後"> 午後</label>
+        </div>
       </div>
 
       <div id="importantNotice" style="margin-top:22px;font-size:17px;line-height:1.7;">
@@ -200,243 +217,91 @@ button:disabled { background: #bfc4c9; cursor: not-allowed; }
         • 自己判断での使用・増量は重大な健康被害を招くため厳禁です。専門医の管理のもと、安全に使用してください。
       </div>
 
+      <div style="margin-top:22px;padding:15px;border:1px solid #ced4da;border-radius:10px;background:#f8f9fa;">
+        <p style="margin:0 0 10px 0;font-size:16px;font-weight:700;color:#001f3f;">【お支払いに関するお願い】</p>
+        <p style="margin:0 0 12px 0;font-size:15px;line-height:1.5;">業務効率化および待ち時間短縮のため、クレジットカードでの決済にご協力をお願いいたします。諸事情により現金でのお支払いを希望される場合は、お手数ですが下記の項目にチェックをお願いいたします。</p>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <input type="checkbox" id="cashPreferred" style="width:26px;height:26px;-webkit-appearance:checkbox;">
+          <label for="cashPreferred" style="margin:0;font-size:18px;font-weight:700;">現金での会計を希望する</label>
+        </div>
+      </div>
+
       <div style="margin-top:15px;display:flex;align-items:center;gap:10px;">
         <input type="checkbox" id="agreeCheck">
         <label for="agreeCheck" style="margin:0;font-size:18px;font-weight:700;">上記内容を確認・同意しました</label>
       </div>
 
-      <div id="validationMessage" style="color: #dc3545; font-size: 15px; font-weight: 700; margin-top: 15px; text-align: center; min-height: 24px;"></div>
-
-      <button type="submit" id="submitBtn" disabled>予約する</button>
+      <button type="submit" id="submitBtn" class="btn btn-primary" disabled>申込を確定する</button>
     </form>
   </div>
 
-  <div id="completeArea" class="complete hidden"></div>
-</div>
+  <script>
+    const GAS_ENDPOINT = "YOUR_GAS_WEB_APP_URL"; // デプロイ後に差し替え
 
-<script>
-const GAS_URL="https://script.google.com/macros/s/AKfycbyZAVbcHORZuuavQsm9rkoARndvwtXX-hUQqUK5vIUJNB3oKg7vv9xE13bEw4RCKo05/exec";
-let holidays=[];
-let minDateStr="";
-let selectedTime="";
-
-window.onload = function() {
-  post("getInitialCalendarData",{}).then(data=>{
-    holidays = data.holidays;
-    minDateStr = data.minDate;
-    reservationDate.min = minDateStr;
-    updateDateGuide(false);
-  });
-};
-
-password.addEventListener("input", function(){
-  if(this.value.trim() !== ""){
-    loginBtn.disabled = false;
-    loginBtn.style.background = "#007bff";
-  } else {
-    loginBtn.disabled = true;
-    loginBtn.style.background = "#c9c9c9";
-  }
-});
-
-function post(action,data){
-  return fetch(GAS_URL,{
-    method:"POST",
-    headers:{"Content-Type":"text/plain"},
-    body:JSON.stringify({action:action,...data})
-  }).then(r=>r.json());
-}
-
-function login(){
-  loginBtn.disabled=true;
-  post("authenticate",{password:password.value})
-  .then(res=>{
-    if(res===true){
-      loginArea.classList.add("hidden");
-      formArea.classList.remove("hidden");
-      if(minDateStr) reservationDate.min = minDateStr;
-      initData();
-    }else{
-      alert("パスワードが違います");
-      loginBtn.disabled=false;
+    function checkFormComplete(){
+      const isBasicFilled = lastName.value && firstName.value && lastKana.value && firstKana.value && 
+                            birthDate.value && address.value && phone.value && email.value && 
+                            firstPurchase.value && setCount.value && reservationDate.value && 
+                            document.querySelector('input[name="timeSlot"]:checked');
+      
+      const isAgreed = agreeCheck.checked;
+      submitBtn.disabled = !(isBasicFilled && isAgreed);
     }
-  });
-}
 
-function initData(){
-  post("getSetOptions",{}).then(list=>{
-    setCount.innerHTML="";
-    list.forEach(function(opt){
-      const o=document.createElement("option");
-      o.value=opt.value;
-      o.textContent=opt.label;
-      setCount.appendChild(o);
+    authBtn.addEventListener("click", function(){
+      const pw = systemPassword.value;
+      if(!pw) return;
+      loadingOverlay.style.display = "flex";
+      google.script.run.withSuccessHandler(function(isValid){
+        loadingOverlay.style.display = "none";
+        if(isValid){
+          authSection.style.display = "none";
+          mainSection.style.display = "block";
+        } else {
+          alert("パスワードが正しくありません。");
+        }
+      }).validatePassword(pw);
     });
-  });
-}
 
-function finalValidateAge() {
-  const val = birthDate.value;
-  if(!val) return false;
-  const today = new Date();
-  const birth = new Date(val.replace(/-/g, "/"));
-  if(isNaN(birth.getTime())) return false;
-  
-  let age = today.getFullYear() - birth.getFullYear();
-  const m = today.getMonth() - birth.getMonth();
-  if(m < 0 || (m === 0 && today.getDate() < birth.getDate())){ age--; }
+    reservationForm.addEventListener("submit", function(e){
+      e.preventDefault();
+      const selectedTime = document.querySelector('input[name="timeSlot"]:checked').value;
+      
+      const data = {
+        referralCode: referralCode.value,
+        lastName: lastName.value,
+        firstName: firstName.value,
+        lastKana: lastKana.value,
+        firstKana: firstKana.value,
+        birthDate: birthDate.value,
+        address: address.value,
+        phone: phone.value,
+        email: email.value,
+        firstPurchase: firstPurchase.value === "true",
+        setCount: setCount.value,
+        reservationDate: reservationDate.value,
+        time: selectedTime,
+        cashPreferred: cashPreferred.checked // 追加
+      };
 
-  if(age < 18){
-    alert("18歳未満は申し込みできません");
-    return false;
-  }
-  return true;
-}
+      loadingOverlay.style.display = "flex";
+      google.script.run.withSuccessHandler(function(res){
+        loadingOverlay.style.display = "none";
+        if(res.success){
+          alert("申込が完了しました。\n予約番号: " + res.reservationNumber);
+          location.reload();
+        } else {
+          alert("エラー: " + res.message);
+        }
+      }).submitReservation(data);
+    });
 
-function updateDateGuide(isError) {
-  if(!minDateStr) return;
-  const dLimit = new Date(minDateStr.replace(/-/g, "/"));
-  const formattedLimit = (dLimit.getMonth() + 1) + "月" + dLimit.getDate() + "日";
-  dateGuide.textContent = formattedLimit + " 以降の日付を選択してください";
-  
-  if(isError) {
-    dateGuide.classList.add("error-text");
-  } else {
-    dateGuide.classList.remove("error-text");
-  }
-}
-
-function checkFormComplete(){
-  const dateVal = reservationDate.value;
-  const isDateFilled = !!dateVal;
-  const isTimeFilled = !!selectedTime;
-  const isAgreed = agreeCheck.checked;
-  const isBasicFilled = (referralCode.value && lastName.value && firstName.value && lastKana.value && 
-                        firstKana.value && birthDate.value && address.value && phone.value && 
-                        email.value && firstPurchase.value && setCount.value);
-
-  // 日曜・祝日の論理チェック
-  let isHolidayOrSunday = false;
-  if (dateVal) {
-    const d = new Date(dateVal.replace(/-/g, "/"));
-    if (d.getDay() === 0 || holidays.includes(dateVal)) {
-      isHolidayOrSunday = true;
-    }
-  }
-
-  const isDateLogicalError = (dateVal && minDateStr && dateVal < minDateStr);
-
-  // 全て正常な場合
-  if(isBasicFilled && isDateFilled && !isDateLogicalError && !isHolidayOrSunday && isTimeFilled && isAgreed){
-    submitBtn.disabled = false;
-    submitBtn.style.background = "#007bff";
-    validationMessage.textContent = "";
-    updateDateGuide(false);
-    return;
-  }
-
-  // エラーがある場合のボタン無効化
-  submitBtn.disabled = true;
-  submitBtn.style.background = "#c9c9c9";
-
-  if(!isBasicFilled){
-    validationMessage.textContent = "※未入力の項目があります";
-    updateDateGuide(false);
-  } else if(!isDateFilled){
-    validationMessage.textContent = "※受取日を選択してください";
-    updateDateGuide(false);
-  } else if(isHolidayOrSunday){
-    // 日曜・祝日の際はメッセージを優先し、ガイドの赤文字は解除
-    validationMessage.textContent = "※日曜日・祝日は休診日です";
-    updateDateGuide(false);
-  } else if(isDateLogicalError){
-    // 最短日制限の時のみ、ガイドを赤文字にして強調
-    validationMessage.textContent = "※受取日を正しく選択してください";
-    updateDateGuide(true);
-  } else if(!isTimeFilled){
-    validationMessage.textContent = "※時間帯を選択してください";
-    updateDateGuide(false);
-  } else if(!isAgreed){
-    validationMessage.textContent = "※重要事項への同意チェックが必要です";
-    updateDateGuide(false);
-  }
-}
-
-reservationDate.addEventListener("change", function(){
-  const val = this.value;
-  if(!val) return;
-
-  const d = new Date(val.replace(/-/g, "/"));
-  if(d.getDay() === 3 || d.getDay() === 6){
-    afternoonBtn.classList.add("disabled");
-    if(selectedTime === "午後"){
-      selectedTime = "";
-      afternoonBtn.classList.remove("active");
-    }
-  } else {
-    afternoonBtn.classList.remove("disabled");
-  }
-  
-  checkFormComplete();
-});
-
-morningBtn.onclick=function(){
-  selectedTime="午前";
-  morningBtn.classList.add("active");
-  afternoonBtn.classList.remove("active");
-  checkFormComplete();
-};
-
-afternoonBtn.onclick=function(){
-  if(afternoonBtn.classList.contains("disabled")) return;
-  selectedTime="午後";
-  afternoonBtn.classList.add("active");
-  morningBtn.classList.remove("active");
-  checkFormComplete();
-};
-
-[referralCode,lastName,firstName,lastKana,firstKana,address,phone,email,firstPurchase,setCount,agreeCheck,birthDate].forEach(el=>{
-  const eventType = (el.tagName === "INPUT" && (el.type === "text" || el.type === "tel" || el.type === "email" || el.type === "password")) ? "input" : "change";
-  el.addEventListener(eventType, checkFormComplete);
-});
-
-reservationForm.addEventListener("submit",function(e){
-  e.preventDefault();
-  if(!finalValidateAge()) return;
-
-  submitBtn.disabled=true;
-  submitBtn.classList.add("locked");
-  validationMessage.textContent = "送信中です。しばらくお待ちください...";
-
-  const data={
-    referralCode:referralCode.value,
-    lastName:lastName.value,
-    firstName:firstName.value,
-    lastKana:lastKana.value,
-    firstKana:firstKana.value,
-    birthDate:birthDate.value,
-    address:address.value,
-    phone:phone.value,
-    email:email.value,
-    firstPurchase:firstPurchase.value==="true",
-    setCount:setCount.value,
-    reservationDate:reservationDate.value,
-    time:selectedTime
-  };
-
-  post("submitReservation",{data:data}).then(res=>{
-    if(res.status==="success"){
-      formArea.classList.add("hidden");
-      completeArea.classList.remove("hidden");
-      completeArea.innerHTML="<h3>予約が完了しました</h3><h5>★本画面のスクショを推奨★</h5><p>【 予約番号 】："+res.reservationNumber+"</p><p>予約内容確認メールをご指定のメールアドレスに送信致しました。（送信元：kitada.medical.clinic@gmail.com）<br>当日は確認メール、もしくは本画面に記載された【 予約番号 】を窓口でお知らせください</p><p>北田内科クリニック</p><button onclick=\"window.location.href='https://www.kitadaclinic.com/'\" style=\"margin-top:20px;padding:16px;width:100%;font-size:18px;font-weight:700;border-radius:10px;border:none;background:#007bff;color:white;min-height:50px;\">北田内科クリニック公式ホームページへ</button>";
-    }else{
-      alert(res.message);
-      submitBtn.disabled=false;
-      submitBtn.classList.remove("locked");
-      checkFormComplete();
-    }
-  });
-});
-</script>
+    [referralCode,lastName,firstName,lastKana,firstKana,address,phone,email,firstPurchase,setCount,agreeCheck,birthDate,cashPreferred].forEach(el=>{
+      const eventType = (el.tagName === "INPUT" && (el.type === "text" || el.type === "tel" || el.type === "email" || el.type === "password")) ? "input" : "change";
+      el.addEventListener(eventType, checkFormComplete);
+    });
+    
+    document.getElementsByName("timeSlot").forEach(el => el.addEventListener("change", checkFormComplete));
+  </script>
 </body>
 </html>
