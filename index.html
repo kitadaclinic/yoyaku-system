@@ -450,6 +450,41 @@ reservationForm.addEventListener("submit",function(e){
 function showNoticeModal(){document.getElementById("noticeModal").style.display="flex";} // ★追加
 function closeNoticeModal(){document.getElementById("noticeModal").style.display="none";} // ★追加
 </script>
-<div id="noticeModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999; justify-content:center; align-items:center;"><div style="background:#fff; width:90%; max-width:400px; border-radius:12px; padding:20px; text-align:left; max-height:80vh; overflow-y:auto;"><p style="font-weight:700; margin-bottom:10px;">特別会員の皆様へ</p><p>本システムよりお申し込みいただいた場合、以下の条件にてご案内いたします。</p><p style="font-weight:700;">【対象製品】</p><p>マンジャロ 2.5mg</p><p style="font-weight:700;">【価格】</p><p>1箱（2本）7,000円（税込）<br>※1本あたり 3,500円</p><p style="font-weight:700;">【購入条件】</p><p>・セット販売のみとなります<br>・1セット＝1ヵ月分（2箱［4本］）からのご案内となります</p><p style="font-weight:700;">【費用について】</p><p>・初診料はかかりません</p><p style="font-weight:700;">【重要事項】</p><p>・本申し込みは購入確定ではありません<br>・医師による対面診察の結果により、処方できない場合があります<br>・安全性確保のため、医師の指示に従ってご使用ください<br>・使用中に異常や体調の変化を感じた場合は、速やかに医師へご相談ください</p><p style="font-weight:700;">【受診・会計について】</p><p>・本予約の方は、受付後、状況に応じて優先的に診察へご案内します<br>・初診の方は診察が必須となります<br>・再診の方は、前回購入から一定期間内で使用に問題がない場合、診察は任意となりますが、ご希望があれば診察を行います<br>・診察後のお会計も、状況に応じて優先的に対応いたします</p><p style="font-weight:700;">【お支払いについて】</p><p>・業務効率化のため、可能な限りクレジットカード決済にご協力ください<br>・現金でのお支払いを希望される場合は、予約入力画面の「現金希望」にチェックをお願いします</p><p style="margin-top:10px;">上記内容をご確認・ご理解のうえ、予約情報の入力へお進みください。</p><button onclick="closeNoticeModal()" style="margin-top:15px;width:100%;padding:14px;font-size:16px;font-weight:700;border:none;border-radius:8px;background:#007bff;color:white;">同意して進む</button></div></div>
+<div id="noticeModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999; justify-content:center; align-items:center;">
+  <div style="background:#fff; width:90%; max-width:400px; border-radius:12px; padding:24px; text-align:left; max-height:80vh; overflow-y:auto; box-shadow:0 10px 30px rgba(0,0,0,0.15);">
+
+<p style="font-weight:700; margin-bottom:12px; font-size:18px;">特別会員の皆様へ</p>
+
+<p style="font-size:14px; line-height:1.6; margin-bottom:16px;">本システムよりお申し込みいただいた場合、以下の条件にてご案内いたします。</p>
+
+<p style="font-weight:700; margin-top:16px; margin-bottom:6px; font-size:15px;">【対象製品】</p>
+<p style="font-size:14px; line-height:1.6; margin-bottom:16px;">マンジャロ 2.5mg</p>
+
+<p style="font-weight:700; margin-top:16px; margin-bottom:6px; font-size:15px;">【価格】</p>
+<p style="font-size:14px; line-height:1.6; margin-bottom:16px;">1箱（2本）7,000円（税込）<br>※1本あたり 3,500円</p>
+
+<p style="font-weight:700; margin-top:16px; margin-bottom:6px; font-size:15px;">【購入条件】</p>
+<p style="font-size:14px; line-height:1.6; margin-bottom:16px;">・セット販売のみとなります<br>・1セット＝1ヵ月分（2箱［4本］）からのご案内となります</p>
+
+<p style="font-weight:700; margin-top:16px; margin-bottom:6px; font-size:15px;">【費用について】</p>
+<p style="font-size:14px; line-height:1.6; margin-bottom:16px;">・初診料はかかりません</p>
+
+<p style="font-weight:700; margin-top:16px; margin-bottom:6px; font-size:15px;">【重要事項】</p>
+<p style="font-size:14px; line-height:1.6; margin-bottom:16px;">・本申し込みは購入確定ではありません<br>・医師による対面診察の結果により、処方できない場合があります<br>・安全性確保のため、医師の指示に従ってご使用ください<br>・使用中に異常や体調の変化を感じた場合は、速やかに医師へご相談ください</p>
+
+<p style="font-weight:700; margin-top:16px; margin-bottom:6px; font-size:15px;">【受診・会計について】</p>
+<p style="font-size:14px; line-height:1.6; margin-bottom:16px;">・本予約の方は、受付後、状況に応じて優先的に診察へご案内します<br>・初診の方は診察が必須となります<br>・再診の方は、前回購入から一定期間内で使用に問題がない場合、診察は任意となりますが、ご希望があれば診察を行います<br>・診察後のお会計も、状況に応じて優先的に対応いたします</p>
+
+<p style="font-weight:700; margin-top:16px; margin-bottom:6px; font-size:15px;">【お支払いについて】</p>
+<p style="font-size:14px; line-height:1.6; margin-bottom:16px;">・業務効率化のため、可能な限りクレジットカード決済にご協力ください<br>・現金でのお支払いを希望される場合は、予約入力画面の「現金希望」にチェックをお願いします</p>
+
+<p style="font-size:14px; line-height:1.6; margin-top:10px;">上記内容をご確認・ご理解のうえ、予約情報の入力へお進みください。</p>
+
+<button onclick="closeNoticeModal()" style="margin-top:24px;width:100%;padding:14px;font-size:16px;font-weight:700;border:none;border-radius:12px;background:#2563EB;color:white;">
+  同意して進む
+</button>
+
+  </div>
+</div>
 </body>
 </html>
