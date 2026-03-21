@@ -431,7 +431,7 @@ reservationForm.addEventListener("submit",function(e){
     setCount:setCount.value,
     reservationDate:reservationDate.value,
     time:selectedTime,
-    cashPreferred:cashPreferred.checked // 追加
+    cashPreferred: document.getElementById("cashPreferred").checked // ★追加
   };
 
   post("submitReservation",{data:data}).then(res=>{
